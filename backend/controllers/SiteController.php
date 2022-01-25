@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\CreateUserForm;
+use backend\models\EditInfoForm;
 use backend\models\Organization;
 use backend\models\user;
 use common\models\LoginForm;
@@ -91,9 +92,19 @@ class SiteController extends Controller
 		return $this->render('organization', ['organizations' => $organizations]);
 	}
 
+	/**
+	 * @throws \yii\base\Exception
+	 * @throws \yii\db\StaleObjectException
+	 * @throws \yii\db\Exception
+	 */
 	public function actionCabinet()
 	{
-		return $this->render('cabinet');
+		$model = new EditInfoForm();
+		$res = '';
+		if ($model->load(Yii::$app->request->post()) && $model->edit()) {
+			$res = 'Ваши данные успешно изменены';
+		}
+		return $this->render('cabinet', ['model' => $model, 'result' => $res]);
 	}
 
 	public function actionApplication()
