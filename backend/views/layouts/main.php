@@ -34,14 +34,13 @@ AppAsset::register($this);
             'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Dashboard', 'url' => ['/site/index']],
-    ];
-    if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Авторизация', 'url' => ['/site/login']];
-    } else {
+    $menuItems = [];
+    if (!Yii::$app->user->isGuest){
+		$menuItems[] = ['label' => 'Dashboard', 'url' => ['/site/index']];
+		$menuItems[] = ['label' => 'Заявки', 'url' => ['/site/application']];
 		$menuItems[] = ['label' => 'Пользователи', 'url' => ['/site/users']];
 		$menuItems[] = ['label' => 'Организации', 'url' => ['/site/organization']];
+		$menuItems[] = ['label' => 'Личный кабинет', 'url' => ['/site/cabinet']];
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
             . Html::submitButton(
@@ -50,6 +49,8 @@ AppAsset::register($this);
             )
             . Html::endForm()
             . '</li>';
+    }else{
+        $menuItems[] = ['label' => 'Авторизация', 'url' => ['/site/login']];
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav ml-auto'],

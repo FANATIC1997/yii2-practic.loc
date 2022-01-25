@@ -16,6 +16,11 @@ class m220125_102755_create_status_table extends Migration
             'id' => $this->primaryKey(),
             'name' => $this->string()->notNull(),
         ]);
+
+		$this->insert('{{%status}}', ['name' => 'Новая']);
+		$this->insert('{{%status}}', ['name' => 'В работе']);
+		$this->insert('{{%status}}', ['name' => 'Готово']);
+		$this->insert('{{%status}}', ['name' => 'Закрыто']);
     }
 
     /**

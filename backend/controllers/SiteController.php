@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\CreateUserForm;
+use backend\models\Organization;
 use backend\models\user;
 use common\models\LoginForm;
 use Yii;
@@ -30,7 +31,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['index', 'users', 'organization'],
+                        'actions' => ['index', 'users', 'organization', 'cabinet', 'application'],
                         'allow' => true,
                         'roles' => ['admin'],
                     ],
@@ -85,7 +86,19 @@ class SiteController extends Controller
 
 	public function actionOrganization()
 	{
-		return $this->render('organization');
+		$organizations = Organization::find()->all();
+
+		return $this->render('organization', ['organizations' => $organizations]);
+	}
+
+	public function actionCabinet()
+	{
+		return $this->render('cabinet');
+	}
+
+	public function actionApplication()
+	{
+		return $this->render('application');
 	}
 
     /**
