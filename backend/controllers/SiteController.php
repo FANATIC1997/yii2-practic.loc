@@ -64,9 +64,6 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-		if (!Yii::$app->user->isGuest) {
-			$userId = \Yii::$app->user->getId();
-		}
 		return $this->render('index');
     }
 
@@ -74,6 +71,8 @@ class SiteController extends Controller
 	{
 		$users = user::find()->all();
 		$model = new CreateUserForm();
+		$result = '';
+		$user = null;
 		if ($model->load(Yii::$app->request->post()) && $user = $model->create()) {
 			$result = 'Пользователь успешно создан';
 			$model->username = '';
