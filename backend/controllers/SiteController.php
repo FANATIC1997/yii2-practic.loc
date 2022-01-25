@@ -2,6 +2,8 @@
 
 namespace backend\controllers;
 
+use backend\models\CreateUserForm;
+use backend\models\user;
 use common\models\LoginForm;
 use Yii;
 use yii\filters\VerbFilter;
@@ -70,7 +72,16 @@ class SiteController extends Controller
 
 	public function actionUsers()
 	{
-		return $this->render('users');
+		$users = user::find()->all();
+		$model = new CreateUserForm();
+		if ($model->load(Yii::$app->request->post()) && $user = $model->create()) {
+			$result = 'Пользователь успешно создан';
+			$model->username = '';
+			$model->email = '';
+			$model->password = '';
+			$model->role = '';
+		}
+		return $this->render('users', ['users' => $users, 'result' => $result, 'model' => $model, 'user' => $user]);
 	}
 
 	public function actionOrganization()

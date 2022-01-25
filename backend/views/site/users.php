@@ -1,9 +1,80 @@
 <?php
 
 /* @var $this yii\web\View */
+/* @var $form yii\bootstrap4\ActiveForm */
+/* @var $model \backend\models\CreateUserForm */
+/* @var $user \backend\models\CreateUserForm */
+
+/* @var $users \backend\models\user */
+
+use yii\bootstrap4\ActiveForm;
+use yii\bootstrap4\Html;
 
 $this->title = 'Пользователи';
 ?>
-<div class="site-index">
-	Hello
+<div class="site-user">
+	<? if (!empty($result)): ?>
+        <div class="alert alert-success" role="alert"><?= $result ?></div>
+	<? endif; ?>
+    <div class="row">
+		<?php $form = ActiveForm::begin(['id' => 'create-user', 'options' => ['style' => 'display: flex']]); ?>
+        <div class="col">
+			<?= $form->field($model, 'username')->textInput()->input('username', ['placeholder' => 'Псевдоним...'])->label('') ?>
+        </div>
+        <div class="col">
+			<?= $form->field($model, 'email')->textInput()->input('email', ['placeholder' => 'Email...'])->label('')?>
+        </div>
+        <div class="col">
+			<?= $form->field($model, 'password')->passwordInput()->input('password', ['placeholder' => 'Пароль...'])->label('')?>
+        </div>
+        <div class="col">
+            <?= $form->field($model, 'role')->dropDownList([
+				'1' => 'Администратор',
+				'2' => 'Менеджер',
+				'3'=>'Пользователь'
+			], ['prompt' => 'Выберите уровень...'])->label(''); ?>
+        </div>
+        <div class="col">
+				<?= Html::submitButton('Добавить', ['class' => 'btn btn-primary btn-block', 'name' => 'create-user-button', 'style' => 'margin-top: 13.5%']) ?>
+        </div>
+    </div>
+
+	<?php ActiveForm::end(); ?>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Псевдоним</th>
+            <th scope="col">Email</th>
+            <th scope="col">Уровень доступа</th>
+            <th scope="col">Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+		<? foreach ($users as $key => $item): ?>
+            <tr>
+                <th scope="row"><?= $item->id ?></th>
+                <td><?= $item->username ?></td>
+                <td><?= $item->email ?></td>
+                <?
+
+                ?>
+                <td></td>
+                <td>Изменить</td>
+            </tr>
+		<? endforeach; ?>
+        <? if(!is_null($user)): ?>
+            <tr>
+                <th scope="row"><?= $user->id ?></th>
+                <td><?= $user->username ?></td>
+                <td><?= $user->email ?></td>
+				<?
+
+				?>
+                <td></td>
+                <td>Изменить</td>
+            </tr>
+        <? endif; ?>
+        </tbody>
+    </table>
 </div>
