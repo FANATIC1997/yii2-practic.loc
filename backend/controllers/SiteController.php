@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\CreateOrgForm;
 use backend\models\CreateUserForm;
 use backend\models\EditInfoForm;
 use backend\models\Organization;
@@ -88,8 +89,16 @@ class SiteController extends Controller
 	public function actionOrganization()
 	{
 		$organizations = Organization::find()->all();
-
-		return $this->render('organization', ['organizations' => $organizations]);
+		$model = new CreateOrgForm();
+		$result = '';
+		if ($model->load(Yii::$app->request->post()) && $org = $model->create()) {
+			if(!is_null($org))
+				$result = 'Организация успешно записана';
+			$model->name = '';
+			$model->address = '';
+			$model->contact = '';
+		}
+		return $this->render('organization', ['organizations' => $organizations, 'model' => $model, 'result' => $result]);
 	}
 
 	public function actionCabinet()
