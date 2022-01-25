@@ -12,7 +12,7 @@ $this->title = 'Личный кабинет';
 <div class="site-index">
 	<h2>Изменение личных данных</h2>
 	<?php if (!empty($result)): ?>
-        <div class="alert alert-success" role="alert"><?=$res?></div>
+        <div class="alert alert-success" role="alert"><?=$result?></div>
 	<?php endif; ?>
 	<?php $form = ActiveForm::begin(['id' => 'edit-user']); ?>
     <div class="col">

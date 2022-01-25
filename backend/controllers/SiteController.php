@@ -92,19 +92,17 @@ class SiteController extends Controller
 		return $this->render('organization', ['organizations' => $organizations]);
 	}
 
-	/**
-	 * @throws \yii\base\Exception
-	 * @throws \yii\db\StaleObjectException
-	 * @throws \yii\db\Exception
-	 */
 	public function actionCabinet()
 	{
 		$model = new EditInfoForm();
-		$res = '';
+		$result = '';
 		if ($model->load(Yii::$app->request->post()) && $model->edit()) {
-			$res = 'Ваши данные успешно изменены';
+			$result = 'Ваши данные успешно изменены';
+			$model->username = '';
+			$model->email = '';
+			$model->password = '';
 		}
-		return $this->render('cabinet', ['model' => $model, 'result' => $res]);
+		return $this->render('cabinet', ['model' => $model, 'result' => $result]);
 	}
 
 	public function actionApplication()

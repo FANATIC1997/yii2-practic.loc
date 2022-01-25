@@ -40,8 +40,6 @@ class EditInfoForm extends Model
 			return null;
 		}
 
-		$user = new User();
-
 		$idUser = Yii::$app->user->getId();
 
 		if(!empty($this->username))
@@ -55,6 +53,6 @@ class EditInfoForm extends Model
 			Yii::$app->db->createCommand()->update('user', ['password_hash' => $newpass], 'id = '.$idUser)->execute();
 		}
 
-		return null;
+		return Yii::$app->user->identity;
 	}
 }
