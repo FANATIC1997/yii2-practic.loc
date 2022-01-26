@@ -11,6 +11,17 @@ use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
 
 $this->title = 'Пользователи';
+function getAccess($id): string
+{
+	$roles = Yii::$app->authManager->getRolesByUser($id);
+    $access = 'Пользователь';
+	if(isset($roles['admin']))
+		$access = 'Администратор';
+	if(isset($roles['manager']))
+		$access = 'Менеджер';
+
+    return $access;
+}
 ?>
 <div class="site-user">
 	<? if (!empty($result)): ?>
@@ -55,10 +66,7 @@ $this->title = 'Пользователи';
                 <th scope="row"><?= $item->id ?></th>
                 <td><?= $item->username ?></td>
                 <td><?= $item->email ?></td>
-                <?
-
-                ?>
-                <td></td>
+                <td><?= getAccess($item->id) ?></td>
             </tr>
 		<? endforeach; ?>
         <? if(!is_null($user)): ?>
@@ -66,10 +74,7 @@ $this->title = 'Пользователи';
                 <th scope="row"><?= $user->id ?></th>
                 <td><?= $user->username ?></td>
                 <td><?= $user->email ?></td>
-				<?
-
-				?>
-                <td></td>
+                <td><?= getAccess($user->id) ?></td>
             </tr>
         <? endif; ?>
         </tbody>

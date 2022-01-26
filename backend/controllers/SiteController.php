@@ -92,9 +92,11 @@ class SiteController extends Controller
 		$organizations = Organization::find()->all();
 		$model = new CreateOrgForm();
 		$result = '';
+		$org = null;
 		if ($model->load(Yii::$app->request->post()) && $org = $model->create()) {
 			if(!is_null($org))
 				$result = 'Организация успешно записана';
+
 			$model->name = '';
 			$model->address = '';
 			$model->contact = '';
@@ -117,7 +119,7 @@ class SiteController extends Controller
 
 	public function actionApplication()
 	{
-		$applications = Application::find()->all();
+		$applications = Application::find()->orderBy(['status_id' => SORT_ASC])->all();
 		return $this->render('application', ['applications' => $applications]);
 	}
 
