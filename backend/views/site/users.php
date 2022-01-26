@@ -9,6 +9,7 @@
 
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
+use yii\helpers\Url;
 
 $this->title = 'Пользователи';
 function getAccess($id): string
@@ -58,6 +59,7 @@ function getAccess($id): string
             <th scope="col">Псевдоним</th>
             <th scope="col">Email</th>
             <th scope="col">Уровень доступа</th>
+            <th scope="col">Действия</th>
         </tr>
         </thead>
         <tbody>
@@ -67,6 +69,10 @@ function getAccess($id): string
                 <td><?= $item->username ?></td>
                 <td><?= $item->email ?></td>
                 <td><?= getAccess($item->id) ?></td>
+                <td>
+					<? echo Html::a('Удалить', Url::to(['user/delete', 'id' => $item->id])) ?>
+					<? echo Html::a('Просмотр', Url::to(['user/view', 'id' => $item->id])) ?>
+                </td>
             </tr>
 		<? endforeach; ?>
         <? if(!is_null($user)): ?>
@@ -75,6 +81,10 @@ function getAccess($id): string
                 <td><?= $user->username ?></td>
                 <td><?= $user->email ?></td>
                 <td><?= getAccess($user->id) ?></td>
+                <td>
+					<? echo Html::a('Удалить', Url::to(['user/delete', 'id' => $user->id])) ?>
+					<? echo Html::a('Просмотр', Url::to(['user/view', 'id' => $user->id])) ?>
+                </td>
             </tr>
         <? endif; ?>
         </tbody>

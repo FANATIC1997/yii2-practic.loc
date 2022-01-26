@@ -8,6 +8,7 @@
 
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
+use yii\helpers\Url;
 
 $this->title = 'Организации';
 ?>
@@ -38,6 +39,7 @@ $this->title = 'Организации';
             <th scope="col">Наименование</th>
             <th scope="col">Адрес</th>
             <th scope="col">Контакты</th>
+            <th scope="col">Действие</th>
         </tr>
         </thead>
         <tbody>
@@ -47,6 +49,9 @@ $this->title = 'Организации';
                 <td><?= $item->name ?></td>
                 <td><?= $item->address ?></td>
                 <td><?= $item->contact ?></td>
+                <td>
+					<? echo Html::a('Удалить', Url::to(['organization/delete', 'id' => $item->id])) ?>
+                </td>
             </tr>
 		<? endforeach; ?>
         <? if(!is_null($org)): ?>
@@ -55,6 +60,9 @@ $this->title = 'Организации';
                 <td><?= $org->name ?></td>
                 <td><?= $org->address ?></td>
                 <td><?= $org->contact ?></td>
+                <td>
+					<? echo Html::a('Удалить', Url::to(['organization/delete', 'id' => $org->id])) ?>
+                </td>
             </tr>
         <? endif; ?>
         </tbody>
