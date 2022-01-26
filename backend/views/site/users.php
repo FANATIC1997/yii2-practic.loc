@@ -72,6 +72,7 @@ function getAccess($id): string
                 <td>
 					<? echo Html::a('Удалить', Url::to(['user/delete', 'id' => $item->id])) ?>
 					<? echo Html::a('Просмотр', Url::to(['user/view', 'id' => $item->id])) ?>
+					<? echo Html::a('Изменить', Url::to(['user/edit', 'id' => $item->id])) ?>
                 </td>
             </tr>
 		<? endforeach; ?>
@@ -84,6 +85,7 @@ function getAccess($id): string
                 <td>
 					<? echo Html::a('Удалить', Url::to(['user/delete', 'id' => $user->id])) ?>
 					<? echo Html::a('Просмотр', Url::to(['user/view', 'id' => $user->id])) ?>
+					<? echo Html::a('Изменить', Url::to(['user/edit', 'id' => $user->id])) ?>
                 </td>
             </tr>
         <? endif; ?>

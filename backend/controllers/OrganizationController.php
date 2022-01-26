@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Organization;
+use backend\models\User;
 use yii\web\Controller;
 
 class OrganizationController extends Controller

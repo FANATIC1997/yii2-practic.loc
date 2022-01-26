@@ -7,9 +7,6 @@ use yii\db\ActiveRecord;
 
 class User extends ActiveRecord
 {
-	/**
-	 * @throws \yii\base\InvalidConfigException
-	 */
 	public function getOrgs()
 	{
 		return $this->hasMany(Organization::class, ['id' => 'orgid'])
