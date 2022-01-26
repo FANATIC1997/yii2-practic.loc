@@ -2,14 +2,18 @@
 
 namespace backend\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 
-class user extends ActiveRecord
+class User extends ActiveRecord
 {
-
-	public function getAccess()
+	/**
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function getOrgs()
 	{
-		return $this->hasOne(Access::class, ['id' => 'user_id']);
+		return $this->hasMany(Organization::class, ['id' => 'orgid'])
+			->viaTable('orguser', ['userid' => 'id']);
 	}
 
 }

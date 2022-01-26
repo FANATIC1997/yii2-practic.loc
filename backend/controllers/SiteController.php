@@ -106,6 +106,7 @@ class SiteController extends Controller
 
 	public function actionCabinet()
 	{
+		$user = User::findOne(Yii::$app->user->getId());
 		$model = new EditInfoForm();
 		$result = '';
 		if ($model->load(Yii::$app->request->post()) && $model->edit()) {
@@ -114,7 +115,7 @@ class SiteController extends Controller
 			$model->email = '';
 			$model->password = '';
 		}
-		return $this->render('cabinet', ['model' => $model, 'result' => $result]);
+		return $this->render('cabinet', ['model' => $model, 'result' => $result, 'user' => $user]);
 	}
 
 	public function actionApplication()

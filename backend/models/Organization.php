@@ -18,10 +18,11 @@ use yii\db\ActiveRecord;
 class Organization extends ActiveRecord
 {
 	/**
-	 * {@inheritdoc}
+	 * @throws \yii\base\InvalidConfigException
 	 */
-	public static function tableName()
+	public function getUsers()
 	{
-		return '{{%organization}}';
+		return $this->hasMany(User::class, ['id' => 'userid'])
+			->viaTable('orguser', ['orgid' => 'id']);
 	}
 }
