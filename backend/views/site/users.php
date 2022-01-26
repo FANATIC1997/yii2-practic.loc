@@ -47,12 +47,11 @@ $this->title = 'Пользователи';
             <th scope="col">Псевдоним</th>
             <th scope="col">Email</th>
             <th scope="col">Уровень доступа</th>
-            <th scope="col">Действие</th>
         </tr>
         </thead>
         <tbody>
 		<? foreach ($users as $key => $item): ?>
-            <tr>
+            <tr class="line">
                 <th scope="row"><?= $item->id ?></th>
                 <td><?= $item->username ?></td>
                 <td><?= $item->email ?></td>
@@ -60,11 +59,10 @@ $this->title = 'Пользователи';
 
                 ?>
                 <td></td>
-                <td>Изменить</td>
             </tr>
 		<? endforeach; ?>
         <? if(!is_null($user)): ?>
-            <tr>
+            <tr class="line">
                 <th scope="row"><?= $user->id ?></th>
                 <td><?= $user->username ?></td>
                 <td><?= $user->email ?></td>
@@ -72,7 +70,6 @@ $this->title = 'Пользователи';
 
 				?>
                 <td></td>
-                <td>Изменить</td>
             </tr>
         <? endif; ?>
         </tbody>

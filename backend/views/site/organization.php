@@ -4,6 +4,7 @@
 /* @var $form yii\bootstrap4\ActiveForm */
 /* @var $organizations \backend\models\organization */
 /* @var $model \backend\models\CreateOrgForm */
+/* @var $org \backend\models\CreateOrgForm */
 
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
@@ -37,19 +38,25 @@ $this->title = 'Организации';
             <th scope="col">Наименование</th>
             <th scope="col">Адрес</th>
             <th scope="col">Контакты</th>
-            <th scope="col">Действие</th>
         </tr>
         </thead>
         <tbody>
 		<? foreach ($organizations as $key => $item): ?>
-            <tr>
+            <tr class="line">
                 <th scope="row"><?= $item->id ?></th>
                 <td><?= $item->name ?></td>
                 <td><?= $item->address ?></td>
                 <td><?= $item->contact ?></td>
-                <td>Изменить</td>
             </tr>
 		<? endforeach; ?>
+        <? if(!is_null($org)): ?>
+            <tr class="line">
+                <th scope="row"><?= $org->id ?></th>
+                <td><?= $org->name ?></td>
+                <td><?= $org->address ?></td>
+                <td><?= $org->contact ?></td>
+            </tr>
+        <? endif; ?>
         </tbody>
     </table>
 </div>

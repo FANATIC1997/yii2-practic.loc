@@ -88,3 +88,12 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.line:hover{
+    background: #F5F5F5;
+}
+
+.line{
+    cursor: pointer;
+    transition-duration: 0.5s;
+}

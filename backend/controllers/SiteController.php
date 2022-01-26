@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\Application;
 use backend\models\CreateOrgForm;
 use backend\models\CreateUserForm;
 use backend\models\EditInfoForm;
@@ -98,7 +99,7 @@ class SiteController extends Controller
 			$model->address = '';
 			$model->contact = '';
 		}
-		return $this->render('organization', ['organizations' => $organizations, 'model' => $model, 'result' => $result]);
+		return $this->render('organization', ['organizations' => $organizations, 'model' => $model, 'result' => $result, 'org' => $org]);
 	}
 
 	public function actionCabinet()
@@ -116,7 +117,8 @@ class SiteController extends Controller
 
 	public function actionApplication()
 	{
-		return $this->render('application');
+		$applications = Application::find()->all();
+		return $this->render('application', ['applications' => $applications]);
 	}
 
     /**
