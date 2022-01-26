@@ -109,3 +109,12 @@ a.desc:after {
 .complete{
     background: #34ce57;
 }
+
+.add{
+    cursor: pointer;
+    transition-duration: 0.5s;
+}
+
+.add:hover{
+    background: #F5F5F5;
+}

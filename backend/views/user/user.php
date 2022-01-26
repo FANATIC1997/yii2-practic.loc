@@ -21,9 +21,12 @@ function getAccess($id): string
 <div class="site-index">
 	<? if(count($user->orgs) > 0): ?>
         <h2>Управление прикрепленными организациями</h2>
+		<?php if (!empty($result)): ?>
+            <div class="alert alert-success" role="alert"><?= $result ?></div>
+		<?php endif; ?>
         <div class="container overflow-hidden">
 			<? foreach (array_chunk($user->orgs, 3) as $array): ?>
-                <div class="row gy-5">
+                <div class="row gy-5" style="margin-top: 1%;">
 					<? foreach ($array as $item): ?>
                         <div class="col">
                             <div class="card" style="width: 18rem;">
@@ -34,13 +37,24 @@ function getAccess($id): string
                                         <br/>
                                         <strong>Контакты:</strong> <?= $item->contact ?>
                                     </p>
-									<? echo Html::a('Удалить', Url::to(['user/delete-con', 'idorg' => $item->id, 'iduser' => $user->id]), ['style' => 'float: right;']) ?>
+									<? echo Html::a('<img src="../web/image/delete.svg" width="30" title="Удалить">', Url::to(['user/delete-con', 'orgid' => $item->id, 'userid' => $user->id]), ['style' => 'float: right;']) ?>
                                 </div>
                             </div>
                         </div>
 					<? endforeach; ?>
                 </div>
 			<? endforeach; ?>
+            <a href="#">
+            <div class="row gy-5" style="margin-top: 1%;">
+                <div class="col">
+                    <div class="card add" style="width: 18rem;">
+                        <div class="card-body align-self-center">
+                            <img src="../web/image/plus.svg" width="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
         </div>
 	<? else: ?>
         <h2>Прикрепленные организации не найдены</h2>
@@ -50,8 +64,8 @@ function getAccess($id): string
     $email = $user->email;
     ?>
 	<h2>Изменение личных данных пользователя</h2>
-	<?php if (!empty($result)): ?>
-		<div class="alert alert-success" role="alert"><?= $result ?></div>
+	<?php if (!empty($resultform)): ?>
+		<div class="alert alert-success" role="alert"><?= $resultform ?></div>
 	<?php endif; ?>
 	<?php $form = ActiveForm::begin(['id' => 'edit-user']); ?>
 	<div class="col">

@@ -50,7 +50,7 @@ $this->title = 'Организации';
                 <td><?= $item->address ?></td>
                 <td><?= $item->contact ?></td>
                 <td>
-					<? echo Html::a('Удалить', Url::to(['organization/delete', 'id' => $item->id])) ?>
+					<? echo Html::a('<img src="../web/image/delete.svg" width="30" title="Удалить">', Url::to(['organization/delete', 'id' => $item->id])) ?>
                 </td>
             </tr>
 		<? endforeach; ?>
@@ -61,7 +61,7 @@ $this->title = 'Организации';
                 <td><?= $org->address ?></td>
                 <td><?= $org->contact ?></td>
                 <td>
-					<? echo Html::a('Удалить', Url::to(['organization/delete', 'id' => $org->id])) ?>
+					<? echo Html::a('<img src="../web/image/delete.svg" width="30" title="Удалить">', Url::to(['organization/delete', 'id' => $org->id])) ?>
                 </td>
             </tr>
         <? endif; ?>

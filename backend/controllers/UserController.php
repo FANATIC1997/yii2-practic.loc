@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\Connect;
 use backend\models\EditInfoForm;
 use backend\models\User;
 use Yii;
@@ -35,20 +36,35 @@ class UserController extends Controller
 		{
 			$user = User::findOne($id);
 			$model = new EditInfoForm();
-			$result = '';
+			$resultform = '';
 			if ($model->load(Yii::$app->request->post()) && $edit = $model->edit($id)) {
-				$result = 'Данные успешно изменены';
+				$resultform = 'Данные успешно изменены';
 			}
-			return $this->render('user', ['user' => $user, 'model' => $model, 'result' => $result, 'edit' => $edit]);
+			return $this->render('user', ['user' => $user, 'model' => $model, 'resultform' => $resultform, 'edit' => $edit]);
 		}
 		else return $this->render('site/user');
 	}
 
-	public function actionDeleteCon($idUser = false, $idOrg = false)
+	public function actionDeleteCon($userid = false, $orgid = false)
 	{
-		if(isset($idUser))
+		if(isset($userid) and isset($orgid))
 		{
-
+			$con = Connect::findOne(['orgid' => $orgid, 'userid' => $userid]);
+			if(!is_null($con))
+			{
+				$con->delete();
+				$result = 'Организация успешно отвязана';
+				$user = User::findOne($userid);
+				$model = new EditInfoForm();
+				if ($model->load(Yii::$app->request->post()) && $edit = $model->edit($userid)) {
+					$resultform = '';
+				}
+				return $this->render('user', ['user' => $user, 'model' => $model, 'result' => $result]);
+			}
+			else
+			{
+				return $this->redirect(['site/users']);
+			}
 		}
 	}
 

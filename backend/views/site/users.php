@@ -70,9 +70,9 @@ function getAccess($id): string
                 <td><?= $item->email ?></td>
                 <td><?= getAccess($item->id) ?></td>
                 <td>
-					<? echo Html::a('Удалить', Url::to(['user/delete', 'id' => $item->id])) ?>
-					<? echo Html::a('Просмотр', Url::to(['user/view', 'id' => $item->id])) ?>
-					<? echo Html::a('Изменить', Url::to(['user/edit', 'id' => $item->id])) ?>
+					<? echo Html::a('<img src="../web/image/delete.svg" width="30" title="Удалить">', Url::to(['user/delete', 'id' => $item->id])) ?>
+					<? echo Html::a('<img src="../web/image/view.svg" width="30" title="Посмотреть">', Url::to(['user/view', 'id' => $item->id])) ?>
+					<? echo Html::a('<img src="../web/image/edit.svg" width="30" title="Изменить">', Url::to(['user/edit', 'id' => $item->id])) ?>
                 </td>
             </tr>
 		<? endforeach; ?>
@@ -83,9 +83,9 @@ function getAccess($id): string
                 <td><?= $user->email ?></td>
                 <td><?= getAccess($user->id) ?></td>
                 <td>
-					<? echo Html::a('Удалить', Url::to(['user/delete', 'id' => $user->id])) ?>
-					<? echo Html::a('Просмотр', Url::to(['user/view', 'id' => $user->id])) ?>
-					<? echo Html::a('Изменить', Url::to(['user/edit', 'id' => $user->id])) ?>
+					<? echo Html::a('<img src="../web/image/delete.svg" width="30" title="Удалить">', Url::to(['user/delete', 'id' => $user->id])) ?>
+					<? echo Html::a('<img src="../web/image/view.svg" width="30" title="Посмотреть">', Url::to(['user/view', 'id' => $user->id])) ?>
+					<? echo Html::a('<img src="../web/image/edit.svg" width="30" title="Изменить">', Url::to(['user/edit', 'id' => $user->id])) ?>
                 </td>
             </tr>
         <? endif; ?>

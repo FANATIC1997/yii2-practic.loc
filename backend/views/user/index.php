@@ -18,6 +18,7 @@ function getAccess($id): string
 }
 ?>
 <div class="site-index">
+	<? echo Html::a('<img src="../web/image/edit.svg" width="37" title="Изменить">', Url::to(['user/edit', 'id' => $user->id]), ['style' => 'float: right;']) ?>
     <? if(count($user->orgs) > 0): ?>
     <h2>Приклепленные организации</h2>
     <div class="container overflow-hidden">
