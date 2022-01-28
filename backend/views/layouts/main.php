@@ -35,12 +35,15 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [];
-    if (!Yii::$app->user->isGuest){
-		$menuItems[] = ['label' => 'Dashboard', 'url' => ['/site/index']];
-		$menuItems[] = ['label' => 'Заявки', 'url' => ['/site/application']];
-		$menuItems[] = ['label' => 'Пользователи', 'url' => ['/site/users']];
-		$menuItems[] = ['label' => 'Организации', 'url' => ['/site/organization']];
-		$menuItems[] = ['label' => 'Личный кабинет', 'url' => ['/site/cabinet']];
+    if (Yii::$app->user->isGuest) {
+        $menuItems[] = ['label' => 'Войти', 'url' => ['/site/login']];
+    } else {
+        $menuItems = [
+			['label' => 'Dashboard', 'url' => ['/site/index']],
+			['label' => 'Заявки', 'url' => ['/application/index']],
+			['label' => 'Пользователи', 'url' => ['/user/index']],
+			['label' => 'Организации', 'url' => ['/organization/index']],
+        ];
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
             . Html::submitButton(
@@ -49,8 +52,6 @@ AppAsset::register($this);
             )
             . Html::endForm()
             . '</li>';
-    }else{
-        $menuItems[] = ['label' => 'Авторизация', 'url' => ['/site/login']];
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav ml-auto'],

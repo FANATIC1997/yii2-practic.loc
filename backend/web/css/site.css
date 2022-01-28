@@ -88,33 +88,3 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
-
-.line:hover{
-    background: #F5F5F5;
-}
-
-.line{
-    cursor: pointer;
-    transition-duration: 0.5s;
-}
-
-.new{
-    background: #80bdff;
-}
-
-.work{
-    background: #FFFFFF;
-}
-
-.complete{
-    background: #34ce57;
-}
-
-.add{
-    cursor: pointer;
-    transition-duration: 0.5s;
-}
-
-.add:hover{
-    background: #F5F5F5;
-}

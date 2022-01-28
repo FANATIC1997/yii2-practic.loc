@@ -13,5 +13,4 @@ return [
 			'class' => 'yii\rbac\DbManager',
 		],
     ],
-	'name' => 'Сайт с заявками'
 ];

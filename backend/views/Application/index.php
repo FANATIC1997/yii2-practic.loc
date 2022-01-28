@@ -1,24 +1,23 @@
 <?php
 
-use backend\models\Organization;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\SearchOrganization */
+/* @var $searchModel backend\models\ApplicationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Организации';
+$this->title = 'Applications';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="organization-index">
+<div class="application-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Добавить организацию', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Application', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php Pjax::begin(); ?>
@@ -30,12 +29,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'name',
-            'address',
-            'contact',
+            'id',
+            'theme',
+            'description',
+            'organization_id',
+            'user_id',
+            //'status_id',
             [
                 'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Organization $model, $key, $index, $column) {
+                'urlCreator' => function ($action, Application $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
             ],

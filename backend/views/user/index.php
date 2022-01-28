@@ -1,60 +1,52 @@
 <?php
-/* @var $this yii\web\View */
 
+use backend\models\User;
 use yii\bootstrap4\Html;
 use yii\helpers\Url;
+use yii\grid\ActionColumn;
+use yii\grid\GridView;
+use yii\widgets\Pjax;
+/* @var $this yii\web\View */
+/* @var $searchModel backend\models\UserSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Пользователь';
-function getAccess($id): string
-{
-	$roles = Yii::$app->authManager->getRolesByUser($id);
-	$access = 'Пользователь';
-	if(isset($roles['admin']))
-		$access = 'Администратор';
-	if(isset($roles['manager']))
-		$access = 'Менеджер';
-
-	return $access;
-}
+$this->title = 'Пользователи';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-index">
-	<? echo Html::a('<img src="../web/image/edit.svg" width="37" title="Изменить">', Url::to(['user/edit', 'id' => $user->id]), ['style' => 'float: right;']) ?>
-    <? if(count($user->orgs) > 0): ?>
-    <h2>Приклепленные организации</h2>
-    <div class="container overflow-hidden">
-		<? foreach (array_chunk($user->orgs, 3) as $array): ?>
-            <div class="row gy-5">
-				<? foreach ($array as $item): ?>
-                    <div class="col">
-                        <div class="card" style="width: 18rem;">
-                            <div class="card-body">
-                                <h5 class="card-title"><?= $item->name ?></h5>
-                                <p class="card-text"><strong>Адрес:</strong> <?= $item->address?>
-                                    <br/>
-                                    <br/>
-                                    <strong>Контакты:</strong> <?= $item->contact ?>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-				<? endforeach; ?>
-            </div>
-		<? endforeach; ?>
-    </div>
-    <? else: ?>
-    <h2>Прикрепленные организации не найдены</h2>
-    <? endif; ?>
-    <h2>Личные данные пользователя</h2>
-    <div class="col">
-        <div class="row">
-            <p><strong>Псевдоним:</strong> <?= $user->username ?></p>
-        </div>
-        <div class="row">
-			<p><strong>Email:</strong> <?= $user->email ?></p>
-        </div>
-        <div class="row">
-			<p><strong>Уровень доступа:</strong> <?= getAccess($user->id) ?></p>
-        </div>
-    </div>
-	<? echo Html::a('Назад', Url::to(['site/users', 'id' => $user->id]), ['style'=>'float: right;']) ?>
+<div class="user-index">
+
+    <h1><?= Html::encode('Пользователи') ?></h1>
+
+    <p>
+        <?= Html::a('Добавить пользователя', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+
+    <?php Pjax::begin(); ?>
+    <?php //echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+            'username',
+            'email:email',
+            [
+                    'attribute' => 'item_name',
+                'label' => 'Уровень доступа',
+                'value' => function ($data) {
+                    return $data->setRoleStr($data->getAccess());
+                }
+            ],
+            [
+                'class' => ActionColumn::className(),
+                'urlCreator' => function ($action, User $model, $key, $index, $column) {
+                    return Url::toRoute([$action, 'id' => $model->id]);
+                 }
+            ],
+        ],
+    ]); ?>
+
+    <?php Pjax::end(); ?>
+
 </div>

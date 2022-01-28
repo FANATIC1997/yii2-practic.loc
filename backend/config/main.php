@@ -46,5 +46,6 @@ return [
         ],
         */
     ],
+	'name' => 'Application',
     'params' => $params,
 ];
