@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Application;
+use backend\models\Organization;
 use backend\models\Roles;
 use backend\models\User;
 use common\models\LoginForm;
@@ -77,9 +78,13 @@ class SiteController extends Controller
 		$arrayCountApplications['applicationsNew'] = Application::find()->where(['status_id' => 1])->count();
 		$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => [3, 4]])->count();
 
+		$user = User::findOne(Yii::$app->user->getId());
+		$countOrgs = count($user->orgusers);
+
         return $this->render('index', [
 			'users' => $arrayCountUsers,
 			'applications' => $arrayCountApplications,
+			'countOrgs' => $countOrgs,
 		]);
     }
 

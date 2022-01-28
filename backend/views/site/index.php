@@ -6,6 +6,7 @@ $this->title = 'Dashboard';
 ?>
 <div class="site-index">
     <div class="container overflow-hidden">
+        <h2 style="margin-bottom: 2%;">Прикрепленных к вам организаций: <strong><?= $countOrgs ?></strong></h2>
         <div class="row">
             <div class="col">
                 <div class="card" style="width: 20rem;">
