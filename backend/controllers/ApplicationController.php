@@ -4,6 +4,9 @@ namespace backend\controllers;
 
 use backend\models\Application;
 use backend\models\ApplicationSearch;
+use backend\models\Organization;
+use backend\models\Status;
+use backend\models\User;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;

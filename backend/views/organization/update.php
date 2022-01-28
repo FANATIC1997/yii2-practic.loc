@@ -19,9 +19,10 @@ $this->params['breadcrumbs'][] = 'Изменение';
 			<?= $error ?>
         </div>
 	<? endif; ?>
-    <h2>Изменение информации об организации</h2>
     <?= $this->render('_form', [
         'model' => $model,
+		'users' => $users,
+        'error' => $error
     ]) ?>
 
 </div>

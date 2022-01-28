@@ -13,7 +13,28 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="organization-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+	<? if(count($model->orgusers) > 0): ?>
+        <h2>Приклепленные пользователи</h2>
+        <div class="container overflow-hidden">
+			<? foreach (array_chunk($model->orgusers, 3) as $array): ?>
+                <div class="row gy-5">
+					<? foreach ($array as $item): ?>
+                        <div class="col">
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><?= $item->username ?></h5>
+                                </div>
+                            </div>
+                        </div>
+					<? endforeach; ?>
+                </div>
+			<? endforeach; ?>
+        </div>
+	<? else: ?>
+        <h2>Прикрепленные пользователи не найдены</h2>
+	<? endif; ?>
+
+    <h1 style="margin-top: 1%;"><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>

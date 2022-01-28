@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\bootstrap4\Html;
 use yii\bootstrap4\ActiveForm;
 
@@ -9,18 +10,31 @@ use yii\bootstrap4\ActiveForm;
 ?>
 
 <div class="organization-form">
-    <div class="row">
 		<?php $form = ActiveForm::begin(); ?>
-        <div class="col">
-			<?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+        <div class="form-group">
+			<?
+			$model->usersConnect = $model->getUserOrgsArray();
+			?>
+			<?= $form->field($model, 'usersConnect')->widget(Select2::classname(), [
+				'data' => $users,
+				'size' => Select2::MEDIUM,
+				'options' => ['placeholder' => ' Выберите пользователей...', 'multiple' => true],
+				'pluginOptions' => [
+					'allowClear' => true,
+				],
+			])->label('Привязанные пользователи'); ?>
         </div>
-        <div class="col">
-			<?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
+
+        <div class="form-group">
+			<?= $form->field($model, 'name')->textInput(['maxlength' => true])->input('name', ['placeholder' => 'Наименование...']) ?>
         </div>
-        <div class="col">
-			<?= $form->field($model, 'contact')->textInput(['maxlength' => true]) ?>
+        <div class="form-group">
+			<?= $form->field($model, 'address')->textInput(['maxlength' => true])->input('address', ['placeholder' => 'Адрес...']) ?>
         </div>
-        <div class="col">
+        <div class="form-group">
+			<?= $form->field($model, 'contact')->textInput(['maxlength' => true])->input('contact', ['placeholder' => 'Контакты...']) ?>
+        </div>
+        <div class="form-group">
 			<?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
         </div>
 

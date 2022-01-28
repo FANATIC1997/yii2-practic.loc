@@ -1,5 +1,6 @@
 <?php
 
+use backend\models\Application;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -9,7 +10,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel backend\models\ApplicationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Applications';
+$this->title = 'Заявки';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="application-index">
@@ -17,24 +18,38 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Application', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать заявку', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php Pjax::begin(); ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
             'theme',
-            'description',
-            'organization_id',
-            'user_id',
-            //'status_id',
+            [
+                    'attribute' => 'organization',
+				'value' => function ($data) {
+					return $data->organization->name;
+				}
+            ],
+            [
+				'attribute' => 'user',
+				'value' => function ($data) {
+					return $data->user->username;
+				}
+            ],
+            [
+				'attribute' => 'status',
+				'value' => function ($data) {
+					return $data->status->name;
+				}
+            ],
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Application $model, $key, $index, $column) {

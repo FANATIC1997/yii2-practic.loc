@@ -46,6 +46,9 @@ class ApplicationSearch extends Application
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+			'pagination' => [
+				'pageSize' => 50,
+			],
         ]);
 
         $this->load($params);

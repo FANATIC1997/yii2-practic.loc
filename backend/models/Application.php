@@ -45,9 +45,57 @@ class Application extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'ID' => 'ID',
-            'Тема' => 'Theme',
-            'Сообщение' => 'Description',
+            'id' => 'ID',
+            'theme' => 'Тема',
+            'description' => 'Описание',
+            'status' => 'Статус',
+            'organization' => 'Организация',
+			'user' => 'Пользователь',
+			'status_id' => 'Статус',
+			'user_id' => 'Пользователь',
+			'organization_id' => 'Организация',
         ];
     }
+
+	public function getStatus()
+	{
+		return $this->hasOne(Status::class, ['id' => 'status_id']);
+	}
+
+	public function getUser()
+	{
+		return $this->hasOne(User::class, ['id' => 'user_id']);
+	}
+
+	public function getOrganization()
+	{
+		return $this->hasOne(Organization::class, ['id' => 'organization_id']);
+	}
+
+	public function getAllUsers()
+	{
+		$user = User::find()->select(['id', 'username'])->all();
+		foreach ($user as $item) {
+			$users[$item->id] = $item->username;
+		}
+		return $users;
+	}
+
+	public function getAllOrganization()
+	{
+		$org = Organization::find()->select(['id', 'name'])->all();
+		foreach ($org as $item) {
+			$orgs[$item->id] = $item->name;
+		}
+		return $orgs;
+	}
+
+	public function getAllStatus()
+	{
+		$stat = Status::find()->select(['id', 'name'])->all();
+		foreach ($stat as $item) {
+			$status[$item->id] = $item->name;
+		}
+		return $status;
+	}
 }
