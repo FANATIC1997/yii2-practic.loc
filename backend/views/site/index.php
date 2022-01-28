@@ -8,9 +8,12 @@ $this->title = 'Dashboard';
     <div class="container overflow-hidden">
         <div class="row">
             <div class="col">
-                <div class="card" style="width: 18rem;">
+                <div class="card" style="width: 20rem;">
                     <div class="card-body">
-                        <h5 class="card-title">Общее количество пользователей <strong><?= $allusers ?></strong></h5>
+                        <h5 class="card-title">Статистика пользователей</h5>
+                        <p class="card-text">
+                            Общее количество пользователей <strong><?= $allusers ?></strong>
+                        </p>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Администраторов: <strong><?= $admins ?></strong></li>
