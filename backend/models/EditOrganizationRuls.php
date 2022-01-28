@@ -29,6 +29,8 @@ class EditOrganizationRuls extends Organization
 			}
 		}
 
+		$this->deleteAllConnectUsers();
+
 		$this->save();
 		return null;
 

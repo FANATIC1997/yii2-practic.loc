@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\models\EditOrganizationRuls;
 use backend\models\Organization;
 use backend\models\SearchOrganization;
+use backend\models\User;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -81,9 +82,19 @@ class OrganizationController extends Controller
     {
         $model = new Organization();
 
+		$users = User::find()->select(['id', 'username'])->all();
+
+		foreach ($users as $item) {
+			$data[$item->id] = $item->username;
+		}
+
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post()) ) {
+				$model->usersConnect = $this->request->post()['Organization']['usersConnect'];
+				if($model->save()) {
+					$model->createConnectUserArray();
+					return $this->redirect(['view', 'id' => $model->id]);
+				}
             }
         } else {
             $model->loadDefaultValues();
@@ -91,6 +102,7 @@ class OrganizationController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+			'users' => $data,
         ]);
     }
 
@@ -105,13 +117,23 @@ class OrganizationController extends Controller
     {
         $model = $this->findModelEdit($id);
 
+		$users = User::find()->select(['id', 'username'])->all();
+
+		foreach ($users as $item) {
+			$data[$item->id] = $item->username;
+		}
+
 		$error = null;
-        if ($this->request->isPost && $model->load($this->request->post()) && is_null($error = $model->edit())) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+			$model->usersConnect = $this->request->post()['EditOrganizationRuls']['usersConnect'];
+			if(is_null($error = $model->edit())) {
+				return $this->redirect(['view', 'id' => $model->id]);
+			}
         }
 
         return $this->render('update', [
             'model' => $model,
+			'users' => $data,
 			'error' => $error
         ]);
     }

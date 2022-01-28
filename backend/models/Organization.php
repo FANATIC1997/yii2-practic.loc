@@ -17,6 +17,9 @@ use Yii;
  */
 class Organization extends \yii\db\ActiveRecord
 {
+
+	public $usersConnect;
+
     /**
      * {@inheritdoc}
      */
@@ -70,6 +73,36 @@ class Organization extends \yii\db\ActiveRecord
 		return $this->hasMany(User::class, ['id' => 'userid'])
 			->viaTable('orguser', ['orgid' => 'id']);
     }
+
+	public function getUserOrgsArray()
+	{
+		$org = $this->orgusers;
+
+		foreach ($org as $item)
+		{
+			$data[] = $item->id;
+		}
+		if(!empty($data))
+			return $data;
+		else
+			return null;
+	}
+
+	public function deleteAllConnectUsers()
+	{
+		$this->unlinkAll('orgusers', true);
+		$this->createConnectUserArray();
+	}
+
+	public function createConnectUserArray()
+	{
+		if(!empty($this->usersConnect)) {
+			foreach ($this->usersConnect as $item) {
+				$user = User::findOne($item);
+				$this->link('orgusers', $user);
+			}
+		}
+	}
 
 	public function findByName($name)
 	{
