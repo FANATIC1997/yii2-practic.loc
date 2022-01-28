@@ -30,7 +30,7 @@ class Application extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['theme', 'description', 'organization_id', 'user_id', 'status_id'], 'required'],
+            [['theme', 'description', 'organization_id', 'user_id', 'status_id'], 'required', 'message' => 'Это поле является обязательным'],
             [['organization_id', 'user_id', 'status_id'], 'integer'],
             [['theme', 'description'], 'string', 'max' => 255],
             [['organization_id'], 'exist', 'skipOnError' => true, 'targetClass' => Organization::className(), 'targetAttribute' => ['organization_id' => 'id']],

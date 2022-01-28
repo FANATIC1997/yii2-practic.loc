@@ -7,6 +7,7 @@ use backend\models\ApplicationSearch;
 use backend\models\Organization;
 use backend\models\Status;
 use backend\models\User;
+use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -35,7 +36,7 @@ class ApplicationController extends Controller
 					'class' => AccessControl::className(),
 					'rules' => [
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'delete'],
+							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org'],
 							'allow' => true,
 							'roles' => ['admin'],
 						],
@@ -129,6 +130,21 @@ class ApplicationController extends Controller
 
         return $this->redirect(['index']);
     }
+
+	public function actionGetOrg()
+	{
+		Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+		if (isset($_POST['depdrop_parents'])) {
+			$parents = $_POST['depdrop_parents'];
+			if ($parents != null) {
+				$user_id = $parents[0];
+				$user = User::findOne($user_id);
+				return ['output' => $user->getOrgArray(), 'selected' => ''];
+			}
+		}
+		return ['output'=>'', 'selected'=>''];
+
+	}
 
     /**
      * Finds the Application model based on its primary key value.

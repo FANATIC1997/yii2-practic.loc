@@ -2,6 +2,8 @@
 
 namespace backend\controllers;
 
+use backend\models\Roles;
+use backend\models\User;
 use common\models\LoginForm;
 use Yii;
 use yii\filters\VerbFilter;
@@ -62,7 +64,16 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+		$allcountusers = Roles::find()->count();
+		$allcountadmins = Roles::find()->where(['item_name'=>'admin'])->count();
+		$allcountmanagers = Roles::find()->where(['item_name'=>'manager'])->count();
+		$allcountuserss = Roles::find()->where(['item_name'=>'user'])->count();
+        return $this->render('index', [
+			'allusers' => $allcountusers,
+			'admins' => $allcountadmins,
+			'managers' => $allcountmanagers,
+			'users' => $allcountuserss,
+		]);
     }
 
     /**

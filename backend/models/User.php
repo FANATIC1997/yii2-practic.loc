@@ -116,6 +116,20 @@ class User extends \yii\db\ActiveRecord
 			return null;
 	}
 
+	public function getOrgArray()
+	{
+		$org = $this->orgusers;
+
+		$data = [];
+
+		foreach ($org as $item)
+		{
+			$data[] = ['id'=>$item->id, 'name'=>$item->name];
+		}
+
+		return $data;
+	}
+
 	public function setRoleStr($str = null)
 	{
 		if(!is_null($str)) $this->role = $str;
