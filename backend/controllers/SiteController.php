@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\Application;
 use backend\models\Roles;
 use backend\models\User;
 use common\models\LoginForm;
@@ -64,15 +65,21 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-		$allcountusers = Roles::find()->count();
-		$allcountadmins = Roles::find()->where(['item_name'=>'admin'])->count();
-		$allcountmanagers = Roles::find()->where(['item_name'=>'manager'])->count();
-		$allcountuserss = Roles::find()->where(['item_name'=>'user'])->count();
+		$arrayCountUsers = [];
+		$arrayCountApplications = [];
+		$arrayCountUsers['allusers'] = Roles::find()->count();
+		$arrayCountUsers['admins'] = Roles::find()->where(['item_name'=>'admin'])->count();
+		$arrayCountUsers['managers'] = Roles::find()->where(['item_name'=>'manager'])->count();
+		$arrayCountUsers['users'] = Roles::find()->where(['item_name'=>'user'])->count();
+
+		$arrayCountApplications['allapplications'] = Application::find()->count();
+		$arrayCountApplications['applicationsWork'] = Application::find()->where(['status_id' => 2])->count();
+		$arrayCountApplications['applicationsNew'] = Application::find()->where(['status_id' => 1])->count();
+		$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => [3, 4]])->count();
+
         return $this->render('index', [
-			'allusers' => $allcountusers,
-			'admins' => $allcountadmins,
-			'managers' => $allcountmanagers,
-			'users' => $allcountuserss,
+			'users' => $arrayCountUsers,
+			'applications' => $arrayCountApplications,
 		]);
     }
 
