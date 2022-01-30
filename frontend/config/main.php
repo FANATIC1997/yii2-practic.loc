@@ -36,6 +36,15 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+	    'urlManager' => [
+		    'enablePrettyUrl' => true,
+		    'showScriptName' => false,
+		    'rules' => [
+			    //['class' => 'frontend\components\ClassUrlRule'],
+			    '' => 'site/index',
+			    '<controller:\w+>/<action:\w+>/' => '<controller>/<action>',
+		    ],
+	    ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
