@@ -110,7 +110,7 @@ class User extends \yii\db\ActiveRecord
 		{
 			$data[] = $item->id;
 		}
-		if(!empty($data))
+		if (!empty($data))
 			return $data;
 		else
 			return null;
@@ -124,7 +124,7 @@ class User extends \yii\db\ActiveRecord
 
 		foreach ($org as $item)
 		{
-			$data[] = ['id'=>$item->id, 'name'=>$item->name];
+			$data[] = ['id' => $item->id, 'name' => $item->name];
 		}
 
 		return $data;
@@ -132,16 +132,17 @@ class User extends \yii\db\ActiveRecord
 
 	public function setRoleStr($str = null)
 	{
-		if(!is_null($str)) $this->role = $str;
-		switch ($this->role){
+		if (!is_null($str)) $this->role = $str;
+		switch ($this->role)
+		{
 			case 'admin':
 				$this->role = 'Администратор';
 				return 'Администратор';
 			case 'manager':
-				$this->role =  'Менеджер';
+				$this->role = 'Менеджер';
 				return 'Менеджер';
 			default:
-				$this->role =  'Пользователь';
+				$this->role = 'Пользователь';
 				return 'Пользователь';
 		}
 
@@ -168,10 +169,13 @@ class User extends \yii\db\ActiveRecord
 
 	public function createConnectOrgArray()
 	{
-		foreach ($this->orgTags as $item)
+		if (!empty($this->orgTags))
 		{
-			$org = Organization::findOne($item);
-			$this->link('orgusers', $org);
+			foreach ($this->orgTags as $item)
+			{
+				$org = Organization::findOne($item);
+				$this->link('orgusers', $org);
+			}
 		}
 	}
 
@@ -222,7 +226,8 @@ class User extends \yii\db\ActiveRecord
 	 */
 	public static function findByPasswordResetToken($token)
 	{
-		if (!static::isPasswordResetTokenValid($token)) {
+		if (!static::isPasswordResetTokenValid($token))
+		{
 			return null;
 		}
 
@@ -238,7 +243,8 @@ class User extends \yii\db\ActiveRecord
 	 * @param string $token verify email token
 	 * @return static|null
 	 */
-	public static function findByVerificationToken($token) {
+	public static function findByVerificationToken($token)
+	{
 		return static::findOne([
 			'verification_token' => $token,
 			'status' => self::STATUS_INACTIVE
@@ -253,11 +259,12 @@ class User extends \yii\db\ActiveRecord
 	 */
 	public static function isPasswordResetTokenValid($token)
 	{
-		if (empty($token)) {
+		if (empty($token))
+		{
 			return false;
 		}
 
-		$timestamp = (int) substr($token, strrpos($token, '_') + 1);
+		$timestamp = (int)substr($token, strrpos($token, '_') + 1);
 		$expire = Yii::$app->params['user.passwordResetTokenExpire'];
 		return $timestamp + $expire >= time();
 	}

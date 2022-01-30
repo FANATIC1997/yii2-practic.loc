@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\EditUserRuls;
 use backend\models\Organization;
+use backend\models\Roles;
 use backend\models\User;
 use backend\models\UserSearch;
 use Yii;
@@ -155,8 +156,13 @@ class UserController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->findModel($id)->delete();
+		$role = Roles::find()->where(['user_id' => $id])->one();
+		if(!is_null($role))
+		{
+			$role->delete();
+		}
 
+		$this->findModel($id)->delete();
 		return $this->redirect(['index']);
 	}
 
