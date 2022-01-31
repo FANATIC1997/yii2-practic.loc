@@ -25,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
 
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -44,6 +43,12 @@ $this->params['breadcrumbs'][] = $this->title;
 					return $data->user->username;
 				}
             ],
+			[
+				'attribute' => 'manager',
+				'value' => function ($data) {
+					return $data->manager->username;
+				}
+			],
             [
 				'attribute' => 'status',
 				'value' => function ($data) {

@@ -15,6 +15,7 @@ class m220125_103156_create_application_table extends Migration
 			'description' => $this->string()->notNull(),
 			'organization_id' => $this->integer()->notNull(),
 			'user_id' => $this->integer()->notNull(),
+			'manager_id' => $this->integer()->notNull(),
 			'status_id' => $this->integer()->notNull(),
 		]);
 
@@ -40,6 +41,16 @@ class m220125_103156_create_application_table extends Migration
 		);
 
 		$this->addForeignKey(
+			'idManager',
+			'{{%application}}',
+			'manager_id',
+			'user',
+			'id',
+			'NO ACTION',
+			'CASCADE',
+		);
+
+		$this->addForeignKey(
 			'idStatus',
 			'{{%application}}',
 			'status_id',
@@ -60,9 +71,13 @@ class m220125_103156_create_application_table extends Migration
 			'{{%application}}'
 		);
 
-
 		$this->dropForeignKey(
 			'idUser',
+			'{{%application}}'
+		);
+
+		$this->dropForeignKey(
+			'idManager',
 			'{{%application}}'
 		);
 

@@ -24,22 +24,36 @@ $id_action = $this->context->module->requestedAction->id == 'update';
     <div class="form-group">
 		<?= $form->field($model, 'user_id')->dropDownList($model->getAllUsers(), ['id' => 'user_id', 'prompt' => 'Выберите пользователя...', 'disabled' => $id_action]); ?>
     </div>
-    <? if(!$id_action): ?>
-    <div class="form-group">
-		<?= $form->field($model, 'organization_id')->widget(DepDrop::classname(), [
-			'options' => ['id' => 'organization_id'],
-			'pluginOptions' => [
-				'depends' => ['user_id'],
-				'placeholder' => 'Выберите организацию...',
-				'url' => Url::to(['/application/get-org'])
-			]
-		]); ?>
-    </div>
-    <? else: ?>
+	<? if (!$id_action): ?>
         <div class="form-group">
-			<?= $form->field($model, 'organization_id')->dropDownList($model->getAllOrganization(), ['disabled' => true]); ?>
+			<?= $form->field($model, 'organization_id')->widget(DepDrop::classname(), [
+				'options' => ['id' => 'organization_id'],
+				'pluginOptions' => [
+					'depends' => ['user_id'],
+					'placeholder' => 'Выберите организацию...',
+					'url' => Url::to(['/application/get-org'])
+				]
+			]); ?>
         </div>
-    <? endif; ?>
+
+        <div class="form-group">
+			<?= $form->field($model, 'manager_id')->widget(DepDrop::classname(), [
+				'pluginOptions' => [
+					'depends' => ['organization_id'],
+					'placeholder' => 'Выберите менеджера...',
+					'url' => Url::to(['/application/get-manager'])
+				]
+			]); ?>
+        </div>
+	<? else: ?>
+        <div class="form-group">
+			<?= $form->field($model, 'organization_id')->dropDownList([$model->organization->name], ['disabled' => true]); ?>
+        </div>
+
+        <div class="form-group">
+			<?= $form->field($model, 'manager_id')->dropDownList([$model->manager->username], ['disabled' => true]); ?>
+        </div>
+	<? endif; ?>
     <div class="form-group">
 		<?= $form->field($model, 'status_id')->widget(Select2::classname(), [
 			'data' => $model->getAllStatus(),

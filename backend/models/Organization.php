@@ -88,6 +88,25 @@ class Organization extends \yii\db\ActiveRecord
 			return null;
 	}
 
+	public function getUsersArray()
+	{
+		$users = $this->orgusers;
+
+		if(!is_null($users)) {
+			foreach ($users as $item) {
+				$role = Roles::find()->where(['user_id' => $item->id])->one();
+				if ($role->item_name == 'manager' or $role->item_name == 'admin') {
+					$data[] = ['id' => $item->id, 'name' => $item->username];
+				}
+			}
+		}
+
+		if(!empty($data))
+			return $data;
+		else
+			return '';
+	}
+
 	public function deleteAllConnectUsers()
 	{
 		$this->unlinkAll('orgusers', true);

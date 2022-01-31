@@ -30,12 +30,13 @@ class Application extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['theme', 'description', 'organization_id', 'user_id', 'status_id'], 'required', 'message' => 'Это поле является обязательным'],
-            [['organization_id', 'user_id', 'status_id'], 'integer'],
+            [['theme', 'description', 'organization_id', 'user_id', 'status_id', 'manager_id'], 'required', 'message' => 'Это поле является обязательным'],
+            [['organization_id', 'user_id', 'status_id', 'manager_id'], 'integer'],
             [['theme', 'description'], 'string', 'max' => 255],
             [['organization_id'], 'exist', 'skipOnError' => true, 'targetClass' => Organization::className(), 'targetAttribute' => ['organization_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::className(), 'targetAttribute' => ['status_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['manager_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -51,6 +52,8 @@ class Application extends \yii\db\ActiveRecord
             'status' => 'Статус',
             'organization' => 'Организация',
 			'user' => 'Пользователь',
+			'manager_id' => 'Менеджер',
+			'manager' => 'Менеджер',
 			'status_id' => 'Статус',
 			'user_id' => 'Пользователь',
 			'organization_id' => 'Организация',
@@ -65,6 +68,11 @@ class Application extends \yii\db\ActiveRecord
 	public function getUser()
 	{
 		return $this->hasOne(User::class, ['id' => 'user_id']);
+	}
+
+	public function getManager()
+	{
+		return $this->hasOne(User::class, ['id' => 'manager_id']);
 	}
 
 	public function getOrganization()

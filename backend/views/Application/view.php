@@ -45,6 +45,12 @@ $this->params['breadcrumbs'][] = $model->theme;
 				}
 			],
 			[
+				'attribute' => 'manager',
+				'value' => function ($data) {
+					return $data->manager->username;
+				}
+			],
+			[
 				'attribute' => 'status',
 				'value' => function ($data) {
 					return $data->status->name;

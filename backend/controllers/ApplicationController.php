@@ -36,7 +36,7 @@ class ApplicationController extends Controller
 					'class' => AccessControl::className(),
 					'rules' => [
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org'],
+							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager'],
 							'allow' => true,
 							'roles' => ['admin'],
 						],
@@ -140,6 +140,27 @@ class ApplicationController extends Controller
 				$user_id = $parents[0];
 				$user = User::findOne($user_id);
 				return ['output' => $user->getOrgArray(), 'selected' => ''];
+			}
+		}
+		return ['output'=>'', 'selected'=>''];
+
+	}
+
+	public function actionGetManager()
+	{
+		Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+		if (isset($_POST['depdrop_parents'])) {
+			$parents = $_POST['depdrop_parents'];
+			if ($parents != null) {
+				$org_id = empty($parents[0]) ? null : $parents[0] ;
+				if(!is_null($org_id)) {
+					$org = Organization::findOne($org_id);
+					return ['output' => $org->getUsersArray(), 'selected' => ''];
+				} else {
+					return ['output'=>'', 'selected'=>''];
+				}
+			} else {
+				return ['output'=>'', 'selected'=>''];
 			}
 		}
 		return ['output'=>'', 'selected'=>''];
