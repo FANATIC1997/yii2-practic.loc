@@ -16,6 +16,19 @@ $this->params['breadcrumbs'][] = $model->theme;
     <h1><?= Html::encode($model->theme) ?></h1>
 
     <p>
+        <? if(Yii::$app->user->can('manager')): ?>
+            <? if($model->status_id == 1): ?>
+			    <?= Html::a('В работу', ['work', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+            <? elseif($model->status_id == 2): ?>
+				<?= Html::a('Завершить', ['completed', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+            <? endif; ?>
+        <? endif; ?>
+
+		<? if(Yii::$app->user->can('user')): ?>
+			<? if($model->status_id == 3): ?>
+				<?= Html::a('Закрыть', ['close', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+			<? endif; ?>
+		<? endif; ?>
         <?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',

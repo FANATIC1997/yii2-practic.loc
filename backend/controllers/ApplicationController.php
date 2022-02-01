@@ -36,15 +36,20 @@ class ApplicationController extends Controller
 					'class' => AccessControl::className(),
 					'rules' => [
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager'],
+							'actions' => ['work', 'completed'],
 							'allow' => true,
-							'roles' => ['admin'],
+							'roles' => ['admin', 'manager'],
 						],
 						[
 							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager', 'get-manager-rnd'],
 							'allow' => true,
-							'roles' => ['manager' , 'user']
+							'roles' => ['manager' , 'user', 'admin']
 						],
+						[
+							'actions' => ['close'],
+							'allow' => true,
+							'roles' => ['user', 'admin']
+						]
 					],
 				],
             ]
@@ -94,8 +99,8 @@ class ApplicationController extends Controller
                 if(Yii::$app->user->can('user'))
 				{
 					$model->user_id = Yii::$app->user->getId();
-					$organization = Organization::findOne($model->organization_id);
-					$model->manager_id = $organization->getManagerOrganization();
+					$organization = new Organization();
+					$model->manager_id = $organization->getManagerOrganization($model->organization_id);
 					$model->status_id = 1;
 				}
 				if($model->save())
@@ -180,6 +185,45 @@ class ApplicationController extends Controller
 		}
 		return ['output'=>'', 'selected'=>''];
 
+	}
+
+	public function actionWork($id)
+	{
+		$app = $this->findModel($id);
+		$app->status_id = 2;
+		if($app->save())
+		{
+			return $this->redirect(['view', 'id' => $app->id]);
+		}
+		return $this->render('view', [
+			'model' => $app,
+		]);
+	}
+
+	public function actionCompleted($id)
+	{
+		$app = $this->findModel($id);
+		$app->status_id = 3;
+		if($app->save())
+		{
+			return $this->redirect(['view', 'id' => $app->id]);
+		}
+		return $this->render('view', [
+			'model' => $app,
+		]);
+	}
+
+	public function actionClose($id)
+	{
+		$app = $this->findModel($id);
+		$app->status_id = 4;
+		if($app->save())
+		{
+			return $this->redirect(['view', 'id' => $app->id]);
+		}
+		return $this->render('view', [
+			'model' => $app,
+		]);
 	}
 
     /**

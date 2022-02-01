@@ -42,6 +42,7 @@ AppAsset::register($this);
         $menuItems = [
 			['label' => 'Dashboard', 'url' => ['/site/index']],
 			['label' => 'Заявки', 'url' => ['/application/index']],
+			['label' => 'Личный кабинет', 'url' => ['/cabinet/index']],
         ];
 		if (Yii::$app->user->can('admin'))
 		{
@@ -67,11 +68,13 @@ AppAsset::register($this);
 
 <main role="main" class="flex-shrink-0">
     <div class="container">
+        <? if($this->context->id != 'cabinet'): ?>
         <?= Breadcrumbs::widget([
                 'homeLink' => ['label' => 'Dashboard', 'url' => '/backend/web'],
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
+        <? endif; ?>
         <?= $content ?>
     </div>
 </main>

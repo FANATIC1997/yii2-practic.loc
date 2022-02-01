@@ -82,6 +82,10 @@ $access = Yii::$app->user->can('admin');
 				],
 			]); ?>
         </div>
+    <? else: ?>
+        <div class="form-group">
+			<?= $form->field($model, 'status_id')->dropDownList([$model->getAllStatus()], ['disabled' => true]); ?>
+        </div>
 	<? endif; ?>
     <div class="form-group">
 		<?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

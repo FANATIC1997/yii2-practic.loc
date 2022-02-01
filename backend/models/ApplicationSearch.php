@@ -41,10 +41,12 @@ class ApplicationSearch extends Application
      */
     public function search($params)
     {
-		if(!Yii::$app->user->can('admin')) {
-			$query = Application::find()->where(['user_id' => Yii::$app->user->getId()]);
+		if(Yii::$app->user->can('admin')) {
+			$query = Application::find()->orderBy('status_id');
+		} elseif(Yii::$app->user->can('manager')) {
+			$query = Application::find()->where(['manager_id' => Yii::$app->user->getId()])->orderBy('status_id');
 		} else {
-			$query = Application::find();
+			$query = Application::find()->where(['user_id' => Yii::$app->user->getId()])->orderBy('status_id');
 		}
 
         // add conditions that should always apply here

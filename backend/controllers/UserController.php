@@ -183,6 +183,9 @@ class UserController extends Controller
 		throw new NotFoundHttpException('The requested page does not exist.');
 	}
 
+	/**
+	 * @throws NotFoundHttpException
+	 */
 	protected function findModelEdit($id)
 	{
 		if (($model = EditUserRuls::findOne(['id' => $id])) !== null) {

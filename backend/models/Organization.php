@@ -88,36 +88,14 @@ class Organization extends \yii\db\ActiveRecord
 			return null;
 	}
 
-	public function getManagerOrganization()
+	public function getManagerOrganization($org_id)
 	{
-		$users = $this->orgusers;
-		$idManager = 0;
-
-		if(!is_null($users)) {
-			$min_applications = null;
-			foreach ($users as $item) {
-				$role = Roles::find()->where(['user_id' => $item->id])->one();
-				if ($role->item_name == 'manager') {
-					$applications_count = Application::find()->where(['manager_id' => $item->id])->count();
-					if (is_null($min_applications)) {
-						$min_applications = $applications_count;
-						$idManager = $item->id;
-					} elseif ($applications_count < $min_applications) {
-						$min_applications = $applications_count;
-						$idManager = $item->id;
-					}
-				}
-			}
-			if ($idManager == 0) {
-				$role = Roles::find()->where(['item_name' => 'admin'])->one();
-				$idManager = $role->user_id;
-			}
-		}
-
-		if($idManager > 0)
-			return $idManager;
-		else
-			return null;
+		return $this::find()->from('organization org')->
+		select(['ass.`user_id`, count(ap.`id`)'])->joinWith('orgusers')->
+		leftJoin('auth_assignment ass', 'orguser.userid = ass.user_id')->
+		leftJoin('application ap', 'ap.manager_id = ass.user_id')->
+		where(['org.id' => $org_id])->andWhere(['ass.item_name' => 'manager'])->
+		groupBy('ass.user_id')->orderBy(['ass.user_id' => SORT_DESC])->asArray()->one()['user_id'];
 	}
 
 	public function getUsersArray()
