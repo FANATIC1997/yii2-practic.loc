@@ -21,17 +21,20 @@ class Dashboard extends User
 			$arrayCountApplications['allapplications'] = Application::find()->count();
 			$arrayCountApplications['applicationsWork'] = Application::find()->where(['status_id' => 2])->count();
 			$arrayCountApplications['applicationsNew'] = Application::find()->where(['status_id' => 1])->count();
-			$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => [3, 4]])->count();
+			$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => 3])->count();
+			$arrayCountApplications['applicationsClosed'] = Application::find()->where(['status_id' => 4])->count();
 		} elseif(Yii::$app->user->can('manager')) {
 			$arrayCountApplications['allapplications'] = Application::find()->where(['manager_id' => Yii::$app->user->getId()])->count();
 			$arrayCountApplications['applicationsWork'] = Application::find()->where(['status_id' => 2])->andWhere(['manager_id' => Yii::$app->user->getId()])->count();
 			$arrayCountApplications['applicationsNew'] = Application::find()->where(['status_id' => 1])->andWhere(['manager_id' => Yii::$app->user->getId()])->count();
-			$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => [3,4]])->andWhere(['manager_id' => Yii::$app->user->getId()])->count();
+			$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => 3])->andWhere(['manager_id' => Yii::$app->user->getId()])->count();
+			$arrayCountApplications['applicationsClosed'] = Application::find()->where(['status_id' => 4])->andWhere(['manager_id' => Yii::$app->user->getId()])->count();
 		} else {
 			$arrayCountApplications['allapplications'] = Application::find()->where(['user_id' => Yii::$app->user->getId()])->count();
 			$arrayCountApplications['applicationsWork'] = Application::find()->where(['status_id' => 2])->andWhere(['user_id' => Yii::$app->user->getId()])->count();
 			$arrayCountApplications['applicationsNew'] = Application::find()->where(['status_id' => 1])->andWhere(['user_id' => Yii::$app->user->getId()])->count();
-			$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => [3,4]])->andWhere(['user_id' => Yii::$app->user->getId()])->count();
+			$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => 3])->andWhere(['user_id' => Yii::$app->user->getId()])->count();
+			$arrayCountApplications['applicationsClosed'] = Application::find()->where(['status_id' => 4])->andWhere(['user_id' => Yii::$app->user->getId()])->count();
 		}
 
 		return $arrayCountApplications;

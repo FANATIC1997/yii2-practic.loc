@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "Application".
@@ -33,7 +34,7 @@ class Application extends \yii\db\ActiveRecord
         return [
             [['theme', 'description', 'organization_id', 'user_id', 'status_id', 'manager_id'], 'required', 'message' => 'Это поле является обязательным'],
             [['organization_id', 'user_id', 'status_id', 'manager_id'], 'integer'],
-            [['theme', 'description'], 'string', 'max' => 255],
+            [['theme'], 'string', 'max' => 255],
             [['organization_id'], 'exist', 'skipOnError' => true, 'targetClass' => Organization::className(), 'targetAttribute' => ['organization_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::className(), 'targetAttribute' => ['status_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
@@ -81,27 +82,20 @@ class Application extends \yii\db\ActiveRecord
 		return $this->hasOne(Organization::class, ['id' => 'organization_id']);
 	}
 
-	public function getOrgUserArray()
+	public function getManagerArray($org_id)
 	{
-
+//		$org = Organization::findOne($org_id);
+//		return $org->getManagerArray();
 	}
 
 	public function getAllUsers()
 	{
-		$user = User::find()->select(['id', 'username'])->all();
-		foreach ($user as $item) {
-			$users[$item->id] = $item->username;
-		}
-		return $users;
+		return ArrayHelper::map(User::find()->asArray()->all(), 'id', 'username');
 	}
 
 	public function getAllOrganization()
 	{
-		$org = Organization::find()->select(['id', 'name'])->all();
-		foreach ($org as $item) {
-			$orgs[$item->id] = $item->name;
-		}
-		return $orgs;
+		return ArrayHelper::map(Organization::find()->asArray()->all(), 'id', 'name');
 	}
 
 	public function getAllStatus()

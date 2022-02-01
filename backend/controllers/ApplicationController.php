@@ -166,7 +166,7 @@ class ApplicationController extends Controller
 
 	}
 
-	public function actionGetManager()
+	public function actionGetManagerAjax()
 	{
 		Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 		if (isset($_POST['depdrop_parents'])) {

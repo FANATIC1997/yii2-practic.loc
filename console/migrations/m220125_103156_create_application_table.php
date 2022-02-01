@@ -12,7 +12,7 @@ class m220125_103156_create_application_table extends Migration
 		$this->createTable('{{%application}}', [
 			'id' => $this->primaryKey(),
 			'theme' => $this->string()->notNull(),
-			'description' => $this->string()->notNull(),
+			'description' => $this->text()->notNull(),
 			'organization_id' => $this->integer()->notNull(),
 			'user_id' => $this->integer()->notNull(),
 			'manager_id' => $this->integer()->notNull(),

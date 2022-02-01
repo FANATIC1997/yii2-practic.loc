@@ -18,9 +18,9 @@ $this->title = 'Dashboard';
                         </p>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Администраторов: <strong><?= $users['admins'] ?></strong></li>
-                        <li class="list-group-item">Менеджеров: <strong><?= $users['managers'] ?></strong></li>
-                        <li class="list-group-item">Пользователей: <strong><?= $users['users'] ?></strong></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">Администраторов:  <span class="badge badge-primary badge-pill"><?= $users['admins'] ?></span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">Менеджеров:  <span class="badge badge-primary badge-pill"><?= $users['managers'] ?></span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">Пользователей:  <span class="badge badge-primary badge-pill"><?= $users['users'] ?></span></li>
                     </ul>
                 </div>
             </div>
@@ -34,9 +34,10 @@ $this->title = 'Dashboard';
                         </p>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">В работе: <strong><?= $application['applicationsWork'] ?></strong></li>
-                        <li class="list-group-item">Новых: <strong><?= $application['applicationsNew'] ?></strong></li>
-                        <li class="list-group-item">Решенных: <strong><?= $application['applicationsComplete'] ?></strong></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">Новых:  <span class="badge badge-primary badge-pill"><?= $application['applicationsNew'] ?></span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">В работе:  <span class="badge badge-primary badge-pill"><?= $application['applicationsWork'] ?></span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">Готовых:  <span class="badge badge-primary badge-pill"><?= $application['applicationsComplete'] ?></span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">Решенных:  <span class="badge badge-primary badge-pill"><?= $application['applicationsComplete'] ?></span></li>
                     </ul>
                 </div>
             </div>

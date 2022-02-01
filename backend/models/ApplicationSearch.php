@@ -12,14 +12,17 @@ use backend\models\Application;
  */
 class ApplicationSearch extends Application
 {
+
+	public $organization;
+	public $user;
+	public $manager;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'organization_id', 'user_id', 'status_id'], 'integer'],
-            [['theme', 'description'], 'safe'],
+            [['theme', 'organization', 'user', 'manager'], 'safe'],
         ];
     }
 
@@ -42,11 +45,11 @@ class ApplicationSearch extends Application
     public function search($params)
     {
 		if(Yii::$app->user->can('admin')) {
-			$query = Application::find()->orderBy('status_id');
+			$query = Application::find()->joinWith('organization o')->joinWith('user u')->orderBy('status_id');
 		} elseif(Yii::$app->user->can('manager')) {
-			$query = Application::find()->where(['manager_id' => Yii::$app->user->getId()])->orderBy('status_id');
+			$query = Application::find()->joinWith('organization o')->joinWith('user u')->where(['manager_id' => Yii::$app->user->getId()])->orderBy('status_id');
 		} else {
-			$query = Application::find()->where(['user_id' => Yii::$app->user->getId()])->orderBy('status_id');
+			$query = Application::find()->joinWith('organization o')->joinWith('user u')->where(['user_id' => Yii::$app->user->getId()])->orderBy('status_id');
 		}
 
         // add conditions that should always apply here
@@ -66,16 +69,41 @@ class ApplicationSearch extends Application
             return $dataProvider;
         }
 
+		$dataProvider->setSort([
+			'attributes' => [
+				'theme' => [
+					'asc'  => ['theme' => SORT_ASC],
+					'desc' => ['theme' => SORT_DESC],
+				],
+				'organization' => [
+					'asc'  => ['o.name' => SORT_ASC],
+					'desc' => ['o.name' => SORT_DESC],
+				],
+				'user' => [
+					'asc'  => ['u.username' => SORT_ASC],
+					'desc' => ['u.username' => SORT_DESC],
+				],
+				'manager' => [
+					'asc'  => ['u.username' => SORT_ASC],
+					'desc' => ['u.username' => SORT_DESC],
+				],
+				'status' => [
+					'asc'  => ['status_id' => SORT_ASC],
+					'desc' => ['status_id' => SORT_DESC],
+				],
+			],
+		]);
+
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'organization_id' => $this->organization_id,
-            'user_id' => $this->user_id,
-            'status_id' => $this->status_id,
+            'o.name' => $this->organization->name,
+            'u.username' => $this->user->username,
         ]);
 
         $query->andFilterWhere(['like', 'theme', $this->theme])
-            ->andFilterWhere(['like', 'description', $this->description]);
+            ->andFilterWhere(['like', 'o.name', $this->organization])
+            ->andFilterWhere(['like', 'u.username', $this->user])
+            ->andFilterWhere(['like', 'u.username', $this->manager]);
 
         return $dataProvider;
     }
