@@ -10,6 +10,7 @@ use yii\base\NotSupportedException;
  *
  * @property int $id
  * @property string $username
+ * @property string $phone
  * @property string $auth_key
  * @property string $password_hash
  * @property string|null $password_reset_token
@@ -52,6 +53,10 @@ class User extends \yii\db\ActiveRecord
 			['username', 'unique', 'targetClass' => '\backend\models\User', 'message' => 'Такой псевдоним занят.'],
 			['username', 'string', 'min' => 2, 'max' => 255],
 
+			['phone', 'trim'],
+			['phone', 'required', 'message' => 'Поле является обязательным'],
+			['phone', 'string', 'min' => 10, 'max' => 18],
+
 			['email', 'trim'],
 			['email', 'required', 'message' => 'Поле является обязательным'],
 			['email', 'email'],
@@ -76,6 +81,7 @@ class User extends \yii\db\ActiveRecord
 		return [
 			'id' => 'ID',
 			'username' => 'Никнейм',
+			'phone' => 'Телефон',
 			'email' => 'Email',
 			'role' => 'Уровень доступа'
 		];
@@ -191,6 +197,13 @@ class User extends \yii\db\ActiveRecord
 				$this->link('orgusers', $org);
 			}
 		}
+	}
+
+	public function validatePhone()
+	{
+		$phone = mb_substr(trim($this->phone), 2);
+		$phone = preg_replace('/[^0-9]/', '', $phone);
+		$this->phone = (int) $phone;
 	}
 
 	public function deleteAllConnectOrg()

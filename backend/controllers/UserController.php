@@ -94,6 +94,8 @@ class UserController extends Controller
 		if ($this->request->isPost) {
 			if ($model->load($this->request->post())) {
 				$model->orgTags = $this->request->post()['User']['orgTags'];
+				$model->phone = $this->request->post()['User']['phone'];
+				$model->validatePhone();
 				$model->setPassword($model->password);
 				$model->generateAuthKey();
 				if ($model->save()) {
@@ -135,6 +137,7 @@ class UserController extends Controller
 
 		if ($this->request->isPost && $model->load($this->request->post())) {
 			$model->orgTags = $this->request->post()['EditUserRuls']['orgTags'];
+			$model->phone = $this->request->post()['EditUserRuls']['phone'];
 			if(is_null($error = $model->edit())) {
 				return $this->redirect(['view', 'id' => $model->id]);
 			}

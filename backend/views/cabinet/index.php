@@ -20,6 +20,12 @@ $this->title = 'Личный кабинет';
 		'attributes' => [
 			'id',
 			'username',
+			[
+				'attribute' => 'phone',
+				'value' => function ($data) {
+					return '+7'.$data->phone;
+				}
+			],
 			'email:email',
 			'role'
 		],

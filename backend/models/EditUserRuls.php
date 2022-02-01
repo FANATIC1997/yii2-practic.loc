@@ -15,6 +15,10 @@ class EditUserRuls extends User
 			['username', 'required', 'message' => 'Поле является обязательным'],
 			['username', 'string', 'min' => 2, 'max' => 255],
 
+			['phone', 'trim'],
+			['phone', 'required', 'message' => 'Поле является обязательным'],
+			['phone', 'string', 'min' => 10, 'max' => 18],
+
 			['email', 'trim'],
 			['email', 'required', 'message' => 'Поле является обязательным'],
 			['email', 'email'],
@@ -31,6 +35,8 @@ class EditUserRuls extends User
 		if (!$this->validate()) {
 			return 'Не пройдена валидация';
 		}
+
+		$this->validatePhone();
 
 		if ($this->username != $this->oldAttributes['username']) {
 			$user = User::findByUsername($this->username);

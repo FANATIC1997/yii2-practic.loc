@@ -58,6 +58,12 @@ $this->params['breadcrumbs'][] = $model->theme;
 				}
 			],
 			[
+				'attribute' => 'Телефон',
+				'value' => function ($data) {
+					return '+7'.$data->user->phone;
+				}
+			],
+			[
 				'attribute' => 'manager',
 				'value' => function ($data) {
 					return $data->manager->username;

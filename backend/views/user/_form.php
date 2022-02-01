@@ -3,6 +3,7 @@
 use kartik\select2\Select2;
 use yii\bootstrap4\Html;
 use yii\bootstrap4\ActiveForm;
+use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\User */
@@ -31,6 +32,19 @@ use yii\bootstrap4\ActiveForm;
     </div>
     <div class="form-group">
 		<?= $form->field($model, 'email')->textInput(['maxlength' => true])->input('email', ['placeholder' => 'Email...']) ?>
+    </div>
+    <div class="form-group">
+		<?= $form->field($model, 'phone')->widget(MaskedInput::className(), [
+			'mask' => '+7 (999) 999-99-99',
+			'options' => [
+				'class' => 'form-control placeholder-style',
+				'id' => 'phone2',
+				'placeholder' => ('Телефон')
+			],
+			'clientOptions' => [
+				'clearIncomplete' => true
+			]
+		]) ?>
     </div>
     <div class="form-group">
 		<?= $form->field($model, 'password')->passwordInput(['maxlength' => true])->input('password', ['placeholder' => 'Пароль...'])->label('Пароль') ?>
