@@ -12,7 +12,7 @@ use Yii;
  * @property string $address
  * @property string $contact
  *
- * @property Application[] $applications
+ * @property Application[] $application
  * @property Orguser[] $orgusers
  */
 class Organization extends \yii\db\ActiveRecord
@@ -54,7 +54,7 @@ class Organization extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Applications]].
+     * Gets query for [[Application]].
      *
      * @return \yii\db\ActiveQuery
      */
@@ -84,6 +84,38 @@ class Organization extends \yii\db\ActiveRecord
 		}
 		if(!empty($data))
 			return $data;
+		else
+			return null;
+	}
+
+	public function getManagerOrganization()
+	{
+		$users = $this->orgusers;
+		$idManager = 0;
+
+		if(!is_null($users)) {
+			$min_applications = null;
+			foreach ($users as $item) {
+				$role = Roles::find()->where(['user_id' => $item->id])->one();
+				if ($role->item_name == 'manager') {
+					$applications_count = Application::find()->where(['manager_id' => $item->id])->count();
+					if (is_null($min_applications)) {
+						$min_applications = $applications_count;
+						$idManager = $item->id;
+					} elseif ($applications_count < $min_applications) {
+						$min_applications = $applications_count;
+						$idManager = $item->id;
+					}
+				}
+			}
+			if ($idManager == 0) {
+				$role = Roles::find()->where(['item_name' => 'admin'])->one();
+				$idManager = $role->user_id;
+			}
+		}
+
+		if($idManager > 0)
+			return $idManager;
 		else
 			return null;
 	}

@@ -2,6 +2,7 @@
 
 namespace backend\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\Application;
@@ -40,7 +41,11 @@ class ApplicationSearch extends Application
      */
     public function search($params)
     {
-        $query = Application::find();
+		if(!Yii::$app->user->can('admin')) {
+			$query = Application::find()->where(['user_id' => Yii::$app->user->getId()]);
+		} else {
+			$query = Application::find();
+		}
 
         // add conditions that should always apply here
 

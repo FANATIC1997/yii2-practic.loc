@@ -36,15 +36,10 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-	    'urlManager' => [
-		    'enablePrettyUrl' => true,
-		    'showScriptName' => false,
-		    'rules' => [
-			    //['class' => 'frontend\components\ClassUrlRule'],
-			    '' => 'site/index',
-			    '<controller:\w+>/<action:\w+>/' => '<controller>/<action>',
-		    ],
-	    ],
+		'gii' => [
+			'class' => 'yii\gii\Module',
+			'allowedIPs' => ['192.168.0.213'] // регулируйте в соответствии со своими нуждами
+		],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -54,5 +49,6 @@ return [
         ],
         */
     ],
+	'name' => 'Application',
     'params' => $params,
 ];

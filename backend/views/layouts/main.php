@@ -4,6 +4,7 @@
 /* @var $content string */
 
 use backend\assets\AppAsset;
+use backend\models\User;
 use common\widgets\Alert;
 use yii\bootstrap4\Breadcrumbs;
 use yii\bootstrap4\Html;
@@ -41,10 +42,13 @@ AppAsset::register($this);
         $menuItems = [
 			['label' => 'Dashboard', 'url' => ['/site/index']],
 			['label' => 'Заявки', 'url' => ['/application/index']],
-			['label' => 'Пользователи', 'url' => ['/user/index']],
-			['label' => 'Организации', 'url' => ['/organization/index']],
         ];
-        $menuItems[] = '<li>'
+		if (Yii::$app->user->can('admin'))
+		{
+			$menuItems[] = ['label' => 'Пользователи', 'url' => ['/user/index']];
+			$menuItems[] = ['label' => 'Организации', 'url' => ['/organization/index']];
+        }
+		$menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
             . Html::submitButton(
                 'Выйти (' . Yii::$app->user->identity->username . ')',
@@ -64,7 +68,7 @@ AppAsset::register($this);
 <main role="main" class="flex-shrink-0">
     <div class="container">
         <?= Breadcrumbs::widget([
-                'homeLink' => ['label' => 'Dashboard', 'url' => 'index.php?r=site%2Findex'],
+                'homeLink' => ['label' => 'Dashboard', 'url' => '/backend/web'],
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>

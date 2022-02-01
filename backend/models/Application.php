@@ -13,6 +13,7 @@ use Yii;
  * @property int $organization_id
  * @property int $user_id
  * @property int $status_id
+ * @property int $manager_id
  */
 class Application extends \yii\db\ActiveRecord
 {
@@ -78,6 +79,11 @@ class Application extends \yii\db\ActiveRecord
 	public function getOrganization()
 	{
 		return $this->hasOne(Organization::class, ['id' => 'organization_id']);
+	}
+
+	public function getOrgUserArray()
+	{
+
 	}
 
 	public function getAllUsers()

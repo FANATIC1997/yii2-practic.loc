@@ -2,10 +2,8 @@
 
 namespace backend\controllers;
 
-use backend\models\Application;
-use backend\models\Organization;
 use backend\models\Roles;
-use backend\models\User;
+use common\models\Dashboard;
 use common\models\LoginForm;
 use Yii;
 use yii\filters\VerbFilter;
@@ -34,7 +32,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin', 'manager', 'user'],
                     ],
                 ],
             ],
@@ -67,24 +65,19 @@ class SiteController extends Controller
     public function actionIndex()
     {
 		$arrayCountUsers = [];
-		$arrayCountApplications = [];
-		$arrayCountUsers['allusers'] = Roles::find()->count();
-		$arrayCountUsers['admins'] = Roles::find()->where(['item_name'=>'admin'])->count();
-		$arrayCountUsers['managers'] = Roles::find()->where(['item_name'=>'manager'])->count();
-		$arrayCountUsers['users'] = Roles::find()->where(['item_name'=>'user'])->count();
+		if(Yii::$app->user->can('admin')) {
+			$arrayCountUsers['allusers'] = Roles::find()->count();
+			$arrayCountUsers['admins'] = Roles::find()->where(['item_name' => 'admin'])->count();
+			$arrayCountUsers['managers'] = Roles::find()->where(['item_name' => 'manager'])->count();
+			$arrayCountUsers['users'] = Roles::find()->where(['item_name' => 'user'])->count();
+		}
 
-		$arrayCountApplications['allapplications'] = Application::find()->count();
-		$arrayCountApplications['applicationsWork'] = Application::find()->where(['status_id' => 2])->count();
-		$arrayCountApplications['applicationsNew'] = Application::find()->where(['status_id' => 1])->count();
-		$arrayCountApplications['applicationsComplete'] = Application::find()->where(['status_id' => [3, 4]])->count();
-
-		$user = User::findOne(Yii::$app->user->getId());
-		$countOrgs = count($user->orgusers);
+		$dashboard = new Dashboard();
 
         return $this->render('index', [
 			'users' => $arrayCountUsers,
-			'applications' => $arrayCountApplications,
-			'countOrgs' => $countOrgs,
+			'application' => $dashboard->getCountApplication(),
+			'countOrgs' => $dashboard->getCountOrg(),
 		]);
     }
 
@@ -103,19 +96,13 @@ class SiteController extends Controller
 
 		$model = new LoginForm();
 		if ($model->load(Yii::$app->request->post()) && $model->login()) {
-			if(Yii::$app->user->can('admin'))
-				return $this->goBack();
-			else {
-				$error = 'Вы не являетесь администратором';
-				Yii::$app->user->logout();
-			}
+			return $this->goBack();
 		}
 
 		$model->password = '';
 
 		return $this->render('login', [
 			'model' => $model,
-			'error' => $error
 		]);
     }
 

@@ -40,6 +40,11 @@ class ApplicationController extends Controller
 							'allow' => true,
 							'roles' => ['admin'],
 						],
+						[
+							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager', 'get-manager-rnd'],
+							'allow' => true,
+							'roles' => ['manager' , 'user']
+						],
 					],
 				],
             ]
@@ -85,8 +90,18 @@ class ApplicationController extends Controller
         $model = new Application();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                if(Yii::$app->user->can('user'))
+				{
+					$model->user_id = Yii::$app->user->getId();
+					$organization = Organization::findOne($model->organization_id);
+					$model->manager_id = $organization->getManagerOrganization();
+					$model->status_id = 1;
+				}
+				if($model->save())
+				{
+					return $this->redirect(['view', 'id' => $model->id]);
+				}
             }
         } else {
             $model->loadDefaultValues();

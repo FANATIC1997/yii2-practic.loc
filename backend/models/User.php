@@ -19,7 +19,7 @@ use yii\base\NotSupportedException;
  * @property int $updated_at
  * @property string|null $verification_token
  *
- * @property Application[] $applications
+ * @property Application[] $application
  * @property Orguser[] $orgusers
  */
 class User extends \yii\db\ActiveRecord
@@ -82,7 +82,7 @@ class User extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Gets query for [[Applications]].
+	 * Gets query for [[Application]].
 	 *
 	 * @return \yii\db\ActiveQuery
 	 */
@@ -125,6 +125,20 @@ class User extends \yii\db\ActiveRecord
 		foreach ($org as $item)
 		{
 			$data[] = ['id' => $item->id, 'name' => $item->name];
+		}
+
+		return $data;
+	}
+
+	public function getOrgDropList()
+	{
+		$org = $this->orgusers;
+
+		$data = [];
+
+		foreach ($org as $item)
+		{
+			$data[$item->id] = $item->name;
 		}
 
 		return $data;

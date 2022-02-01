@@ -45,6 +45,11 @@ class EditUserRuls extends User
 			}
 		}
 
+		if(!empty($this->password))
+		{
+			$this->setPassword($this->password);
+		}
+
 		$this->deleteAllConnectOrg();
 
 		$this->save();

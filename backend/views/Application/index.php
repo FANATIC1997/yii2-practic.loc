@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Pjax::begin(); ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-
+	<? if(Yii::$app->user->can('admin')): ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -63,7 +63,40 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-
+    <? else: ?>
+		<?= GridView::widget([
+			'dataProvider' => $dataProvider,
+			'filterModel' => $searchModel,
+			'columns' => [
+				['class' => 'yii\grid\SerialColumn'],
+				'theme',
+				[
+					'attribute' => 'organization',
+					'value' => function ($data) {
+						return $data->organization->name;
+					}
+				],
+				[
+					'attribute' => 'manager',
+					'value' => function ($data) {
+						return $data->manager->username;
+					}
+				],
+				[
+					'attribute' => 'status',
+					'value' => function ($data) {
+						return $data->status->name;
+					}
+				],
+				[
+					'class' => ActionColumn::className(),
+					'urlCreator' => function ($action, Application $model, $key, $index, $column) {
+						return Url::toRoute([$action, 'id' => $model->id]);
+					}
+				],
+			],
+		]); ?>
+    <? endif; ?>
     <?php Pjax::end(); ?>
 
 </div>
