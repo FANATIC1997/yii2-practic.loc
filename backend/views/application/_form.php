@@ -27,7 +27,7 @@ $access = Yii::$app->user->can('admin');
         <div class="form-group">
             <? if($isUpdate):?>
 				<?= $form->field($model, 'user_id')->widget(Select2::className(), [
-					'data' => [],
+					'data' => $model->getUsersOrg($model->organization_id),
 					'options' => ['prompt' => 'Выберите пользователя...', 'disabled' => false]
 				]); ?>
             <? else: ?>
@@ -86,7 +86,7 @@ $access = Yii::$app->user->can('admin');
         <div class="form-group">
 			<?= $form->field($model, 'manager_id')->widget(Select2::className(), [
 				'data' => $model->getManagerArray($model->organization_id),
-				'options' => ['prompt' => 'Выберите менеджера   ...', 'disabled' => false]
+				'options' => ['prompt' => 'Выберите менеджера...', 'disabled' => false]
 			]); ?>
         </div>
 	<? endif; ?>

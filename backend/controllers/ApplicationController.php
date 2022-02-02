@@ -41,7 +41,7 @@ class ApplicationController extends Controller
 							'roles' => ['admin', 'manager'],
 						],
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager', 'get-manager-rnd'],
+							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager-ajax', 'get-manager-rnd'],
 							'allow' => true,
 							'roles' => ['manager' , 'user', 'admin']
 						],

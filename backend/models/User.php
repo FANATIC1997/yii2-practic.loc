@@ -4,6 +4,7 @@ namespace backend\models;
 
 use Yii;
 use yii\base\NotSupportedException;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "user".
@@ -210,6 +211,13 @@ class User extends \yii\db\ActiveRecord
 	{
 		$this->unlinkAll('orgusers', true);
 		$this->createConnectOrgArray();
+	}
+
+	public function getAllAdminArray()
+	{
+		$admins = static::find()->leftJoin('auth_assignment ass', 'ass.user_id=user.id')->where(['item_name' => 'admin'])->all();
+		$result = ArrayHelper::map($admins, 'id', 'username');
+		return $result;
 	}
 
 	/**

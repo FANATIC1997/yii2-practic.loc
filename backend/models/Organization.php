@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "organization".
@@ -88,14 +89,48 @@ class Organization extends \yii\db\ActiveRecord
 			return null;
 	}
 
+	public function getUsersOrg()
+	{
+		$arrayUsers = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
+		->joinWith('orgusers')->where(['orguser.orgid'=>$this->id])->andWhere(['ass.item_name'=>'user'])->asArray()->all();
+
+		$data = ArrayHelper::map($arrayUsers, 'id', 'username');
+
+		if(!empty($data))
+			return $data;
+		else
+			return null;
+	}
+
+	public function getManagerArray()
+	{
+		$arrayManager = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
+			->joinWith('orgusers')->where(['ass.item_name'=>'manager'])
+			->andWhere(['orguser.orgid'=>$this->id])->asArray()->all();
+
+		$data = ArrayHelper::map($arrayManager, 'id', 'username');
+
+		$user = new User();
+
+		$result = $data + $user->getAllAdminArray();
+
+		if(!empty($result))
+			return $result;
+		else
+			return null;
+	}
+
 	public function getManagerOrganization($org_id)
 	{
-		return $this::find()->from('organization org')->
-		select(['ass.`user_id`, count(ap.`id`)'])->joinWith('orgusers')->
-		leftJoin('auth_assignment ass', 'orguser.userid = ass.user_id')->
-		leftJoin('application ap', 'ap.manager_id = ass.user_id')->
-		where(['org.id' => $org_id])->andWhere(['ass.item_name' => 'manager'])->
-		groupBy('ass.user_id')->orderBy(['ass.user_id' => SORT_DESC])->asArray()->one()['user_id'];
+		return $this::find()->from('organization org')
+			->select(['ass.`user_id`, count(ap.`id`)'])
+			->joinWith('orgusers')
+			->leftJoin('auth_assignment ass', 'orguser.userid = ass.user_id')
+			->leftJoin('application ap', 'ap.manager_id = ass.user_id')
+			->where(['org.id' => $org_id])
+			->andWhere(['ass.item_name' => 'manager'])
+			->groupBy('ass.user_id')
+			->orderBy(['ass.user_id' => SORT_DESC])->asArray()->one()['user_id'];
 	}
 
 	public function getUsersArray()

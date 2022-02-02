@@ -84,8 +84,14 @@ class Application extends \yii\db\ActiveRecord
 
 	public function getManagerArray($org_id)
 	{
-//		$org = Organization::findOne($org_id);
-//		return $org->getManagerArray();
+		$org = Organization::findOne($org_id);
+		return $org->getManagerArray();
+	}
+
+	public function getUsersOrg($org_id)
+	{
+		$org = Organization::findOne($org_id);
+		return $org->getUsersOrg();
 	}
 
 	public function getAllUsers()
