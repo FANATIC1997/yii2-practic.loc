@@ -32,7 +32,7 @@ AppAsset::register($this);
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
+            'class' => 'navbar navbar-expand-xl navbar-dark bg-dark fixed-top',
         ],
     ]);
     $menuItems = [];
@@ -73,7 +73,6 @@ AppAsset::register($this);
                 'homeLink' => ['label' => 'Dashboard', 'url' => '/backend/web'],
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
-        <?= Alert::widget() ?>
         <? endif; ?>
         <?= $content ?>
     </div>

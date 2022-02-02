@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\models;
+namespace backend\models;
 
 use Yii;
 use yii\base\Model;
-use common\models\User;
+use backend\models\User;
 
 /**
  * Signup form
@@ -14,6 +14,7 @@ class SignupForm extends Model
     public $username;
     public $email;
     public $password;
+	public $phone;
 
 
     /**
@@ -29,9 +30,13 @@ class SignupForm extends Model
 
             ['email', 'trim'],
             ['email', 'required', 'message' => 'Данное поле является обязательным'],
-            ['email', 'email'],
+            ['email', 'email', 'message' => 'Не является email`om'],
             ['email', 'string', 'max' => 255],
             ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'Такой email уже занят'],
+
+			['phone', 'trim'],
+			['phone', 'required', 'message' => 'Поле является обязательным'],
+			['phone', 'string', 'min' => 10, 'max' => 18],
 
             ['password', 'required', 'message' => 'Данное поле является обязательным'],
             ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
@@ -54,6 +59,8 @@ class SignupForm extends Model
         $user->username = $this->username;
         $user->email = $this->email;
         $user->setPassword($this->password);
+		$user->phone = $this->phone;
+		$user->validatePhone();
         $user->generateAuthKey();
 		$user->save(false);
 

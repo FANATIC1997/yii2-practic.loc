@@ -9,6 +9,7 @@ use backend\models\Organization;
 use backend\models\Status;
 use backend\models\User;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -44,7 +45,12 @@ class ApplicationController extends Controller
 						[
 							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager-ajax', 'get-manager-rnd'],
 							'allow' => true,
-							'roles' => ['manager' , 'user', 'admin']
+							'roles' => ['manager', 'user', 'admin']
+						],
+						[
+							'actions' => ['index', 'view', 'create', 'update', 'get-org', 'get-manager-ajax', 'get-manager-rnd'],
+							'allow' => true,
+							'roles' => ['user']
 						],
 						[
 							'actions' => ['close'],
@@ -70,6 +76,7 @@ class ApplicationController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+			'error' => $this->request->get('error')
         ]);
     }
 
@@ -82,18 +89,35 @@ class ApplicationController extends Controller
     public function actionView($id)
     {
 		$log = new Log();
+
+		$query = Log::find()->where(['application_id' => $id]);
+		$dataProvider = new ActiveDataProvider([
+			'query' => $query,
+		]);
+		$logs = $dataProvider;
+
 		$model = $this->findModel($id);
 		if ($this->request->isPost) {
-			if ($log->load($this->request->post())) {
-				return $this->render('view', [
-					'model' => $model,
-					'log' => $log,
-				]);
+			if($model->status_id == 1)
+			{
+				$this->actionWork($model);
 			}
+			elseif($model->status_id == 2)
+			{
+				$this->actionCompleted($model);
+			}
+			elseif($model->status_id == 3)
+			{
+				$this->actionClose($model);
+			}
+			$log->load($this->request->post());
+			$log->createLog($model);
 		}
         return $this->render('view', [
             'model' => $model,
 			'log' => $log,
+			'logs' => $logs,
+			'error' => $this->request->get('error')
         ]);
     }
 
@@ -105,18 +129,29 @@ class ApplicationController extends Controller
     public function actionCreate()
     {
         $model = new Application();
-
+		$log = new Log();
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 if(Yii::$app->user->can('user'))
 				{
-					$model->user_id = Yii::$app->user->getId();
+					if(!isset($model->user_id))
+					{
+						$model->user_id = Yii::$app->user->getId();
+					}
 					$organization = new Organization();
 					$model->manager_id = $organization->getManagerOrganization($model->organization_id);
 					$model->status_id = 1;
 				}
+				elseif(Yii::$app->user->can('manager'))
+				{
+					$model->user_id = Yii::$app->user->getId();
+					$model->manager_id = $model->user_id;
+					$model->status_id = 1;
+				}
 				if($model->save())
 				{
+					$log->comment = 'Создание заявки';
+					$log->createLog($model);
 					return $this->redirect(['view', 'id' => $model->id]);
 				}
             }
@@ -138,8 +173,16 @@ class ApplicationController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
 
+        $model = $this->findModel($id);
+		if(Yii::$app->user->can('user') and $model->status_id == 4)
+		{
+			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Заявка уже закрыта, ее не возможно изменить']);
+		}
+		if(Yii::$app->user->can('manager') and $model->user_id != Yii::$app->user->getId())
+		{
+			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Вы не являетесь создателем данной заявки']);
+		}
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -158,7 +201,21 @@ class ApplicationController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+		if(Yii::$app->user->can('manager'))
+		{
+			if($model->user_id != Yii::$app->user->getId())
+			{
+				return $this->redirect(['index', 'error' => 'Вы не являетесь создателем данной заявки']);
+			}
+		}
+		if(Yii::$app->user->can('user'))
+		{
+			return $this->redirect(['index', 'error' => 'Вы не можете удалять заявки']);
+		}
+
+		$model->delete();
 
         return $this->redirect(['index']);
     }
@@ -199,43 +256,25 @@ class ApplicationController extends Controller
 
 	}
 
-	public function actionWork($id)
+	public function actionWork($model)
 	{
-		$app = $this->findModel($id);
+		$app = $model;
 		$app->status_id = 2;
-		if($app->save())
-		{
-			return $this->redirect(['view', 'id' => $app->id]);
-		}
-		return $this->render('view', [
-			'model' => $app,
-		]);
+		$app->save();
 	}
 
-	public function actionCompleted($id)
+	public function actionCompleted($model)
 	{
-		$app = $this->findModel($id);
+		$app = $model;
 		$app->status_id = 3;
-		if($app->save())
-		{
-			return $this->redirect(['view', 'id' => $app->id]);
-		}
-		return $this->render('view', [
-			'model' => $app,
-		]);
+		$app->save();
 	}
 
-	public function actionClose($id)
+	public function actionClose($model)
 	{
-		$app = $this->findModel($id);
+		$app = $model;
 		$app->status_id = 4;
-		if($app->save())
-		{
-			return $this->redirect(['view', 'id' => $app->id]);
-		}
-		return $this->render('view', [
-			'model' => $app,
-		]);
+		$app->save();
 	}
 
     /**

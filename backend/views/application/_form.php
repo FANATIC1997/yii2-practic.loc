@@ -82,13 +82,14 @@ $access = Yii::$app->user->can('admin');
         <div class="form-group">
 			<?= $form->field($model, 'organization_id')->dropDownList([$model->organization->name], ['disabled' => true]); ?>
         </div>
-
-        <div class="form-group">
-			<?= $form->field($model, 'manager_id')->widget(Select2::className(), [
-				'data' => $model->getManagerArray($model->organization_id),
-				'options' => ['prompt' => 'Выберите менеджера...', 'disabled' => false]
-			]); ?>
-        </div>
+        <? if($access): ?>
+            <div class="form-group">
+                <?= $form->field($model, 'manager_id')->widget(Select2::className(), [
+                    'data' => $model->getManagerArray($model->organization_id),
+                    'options' => ['prompt' => 'Выберите менеджера...', 'disabled' => false]
+                ]); ?>
+            </div>
+        <? endif; ?>
 	<? endif; ?>
 	<? if ($access): ?>
         <div class="form-group">
@@ -103,6 +104,7 @@ $access = Yii::$app->user->can('admin');
     <? else: ?>
         <div class="form-group">
 			<?= $form->field($model, 'status_id')->dropDownList([$model->getAllStatus()], ['disabled' => true]); ?>
+            <? $model->status_id = 1; ?>
         </div>
 	<? endif; ?>
     <div class="form-group">

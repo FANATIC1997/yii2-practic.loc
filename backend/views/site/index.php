@@ -2,6 +2,8 @@
 
 /* @var $this yii\web\View */
 
+use yii\bootstrap4\Html;
+
 $this->title = 'Dashboard';
 ?>
 <div class="site-index">
@@ -34,10 +36,10 @@ $this->title = 'Dashboard';
                         </p>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">Новых:  <span class="badge badge-primary badge-pill"><?= $application['applicationsNew'] ?></span></li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">В работе:  <span class="badge badge-primary badge-pill"><?= $application['applicationsWork'] ?></span></li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">Готовых:  <span class="badge badge-primary badge-pill"><?= $application['applicationsComplete'] ?></span></li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">Решенных:  <span class="badge badge-primary badge-pill"><?= $application['applicationsComplete'] ?></span></li>
+                        <?=Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">Новых: <span class="badge badge-primary badge-pill">'.$application['applicationsNew'].'</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'Новая']])?>
+                        <?=Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">В работе:  <span class="badge badge-primary badge-pill">'.$application['applicationsWork'].'</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'В работе']])?>
+                        <?=Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">Готовых:  <span class="badge badge-primary badge-pill">'.$application['applicationsComplete'].'</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'Готово']])?>
+                        <?=Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">Решенных:  <span class="badge badge-primary badge-pill">'.$application['applicationsClosed'].'</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'Закрыто']])?>
                     </ul>
                 </div>
             </div>

@@ -2,6 +2,8 @@
 
 namespace backend\models;
 
+use DateTime;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -10,11 +12,12 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property string $comment
- * @property string $description
  * @property int $application_id
  * @property int $user_id
  * @property int $status_id
  * @property int $old_user_id
+ * @property int $created_at
+ * @property int $updated_at
  */
 class Log extends ActiveRecord
 {
@@ -55,9 +58,11 @@ class Log extends ActiveRecord
 		return [
 			'comment' => 'Комментарий',
 			'status_id' => 'Статус',
-			'user_id' => 'Пользователь',
+			'user_id' => 'Кто',
 			'old_user_id' => 'Старый пользователь',
-			'application_id' => 'Заявка'
+			'application_id' => 'Заявка',
+			'created_at' => 'Когда',
+			'updated_at' => 'Время обновления',
 		];
 	}
 
@@ -99,5 +104,42 @@ class Log extends ActiveRecord
 	public function getOldUser()
 	{
 		return $this->hasOne(User::class, ['id' => 'old_user_id']);
+	}
+
+	public function createLog($model)
+	{
+		$this->status_id = $model->status_id;
+		$this->user_id = Yii::$app->user->getId();
+		$this->application_id = $model->id;
+		$this->save();
+		$this->comment = null;
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	public function getBackStatus($data)
+	{
+		if($data->status_id != 1) {
+			$log = static::find()->where(['application_id' => $data->application_id])
+				->andWhere(['status_id' => $data->status_id - 1])->one();
+
+			$startDate = new DateTime(date('Y-m-d H:m:s', $data->created_at));
+			$endDate = new DateTime(date('Y-m-d H:m:s', $log->created_at));
+
+			$interval = $startDate->diff($endDate);
+
+			$str = '<br><span class="badge badge-info" data-toggle="tooltip" data-placement="top" title="Время реагирования">';
+			$str .= ($interval->y != 0) ? $interval->format('%y л '): '';
+			$str .= ($interval->m != 0) ? $interval->format('%m м '): '';
+			$str .= ($interval->d != 0) ? $interval->format('%d д '): '';
+			$str .= ($interval->h != 0) ? $interval->format('%h ч '): '';
+			$str .= ($interval->i != 0) ? $interval->format('%i мин '): '';
+			$str .= ($interval->s != 0) ? $interval->format('%s сек '): '';
+			$str .= '</span>';
+
+			return $str;
+		}
+		return null;
 	}
 }

@@ -3,10 +3,11 @@
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap4\ActiveForm */
 
-/* @var $model \frontend\models\SignupForm */
+/* @var $model \backend\models\SignupForm */
 
 use yii\bootstrap4\Html;
 use yii\bootstrap4\ActiveForm;
+use yii\widgets\MaskedInput;
 
 $this->title = 'Регистрация';
 ?>
@@ -21,7 +22,23 @@ $this->title = 'Регистрация';
 
 		<?= $form->field($model, 'email')->label('Email') ?>
 
+			<?= $form->field($model, 'phone')->widget(MaskedInput::className(), [
+				'mask' => '+7 (999) 999-99-99',
+				'options' => [
+					'class' => 'form-control placeholder-style',
+					'id' => 'phone2',
+					'placeholder' => ('Телефон')
+				],
+				'clientOptions' => [
+					'clearIncomplete' => true
+				]
+			]) ?>
+
 		<?= $form->field($model, 'password')->passwordInput()->label('Пароль') ?>
+
+        <div style="color:#999;margin:1em 0">
+            Вернуться на <?= Html::a('авторизацию', ['site/login']) ?>.
+        </div>
 
         <div class="form-group">
 			<?= Html::submitButton('Зарегистрироваться', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>

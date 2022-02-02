@@ -48,9 +48,9 @@ class ApplicationSearch extends Application
 		if(Yii::$app->user->can('admin')) {
 			$query = Application::find()->joinWith('organization o')->joinWith('user u')->joinWith('status st')->orderBy('status_id');
 		} elseif(Yii::$app->user->can('manager')) {
-			$query = Application::find()->joinWith('organization o')->joinWith('user u')->where(['manager_id' => Yii::$app->user->getId()])->orderBy('status_id');
+			$query = Application::find()->joinWith('organization o')->joinWith('user u')->joinWith('status st')->where(['manager_id' => Yii::$app->user->getId()])->orderBy('status_id');
 		} else {
-			$query = Application::find()->joinWith('organization o')->joinWith('user u')->where(['user_id' => Yii::$app->user->getId()])->orderBy('status_id');
+			$query = Application::find()->joinWith('organization o')->joinWith('user u')->joinWith('status st')->where(['user_id' => Yii::$app->user->getId()])->orderBy('status_id');
 		}
 
         // add conditions that should always apply here

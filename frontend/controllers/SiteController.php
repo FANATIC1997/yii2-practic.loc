@@ -124,22 +124,6 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    /**
-     * Signs user up.
-     *
-     * @return mixed
-     */
-    public function actionSignup()
-    {
-        $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
-            Yii::$app->session->setFlash('success', 'Спасибо за регистрацию');
-            return $this->goHome();
-        }
 
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
-    }
 
 }

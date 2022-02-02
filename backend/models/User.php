@@ -60,7 +60,7 @@ class User extends \yii\db\ActiveRecord
 
 			['email', 'trim'],
 			['email', 'required', 'message' => 'Поле является обязательным'],
-			['email', 'email'],
+			['email', 'email', 'message' => 'Не является email`ом'],
 			['email', 'string', 'max' => 255],
 			['email', 'unique', 'targetClass' => '\backend\models\User', 'message' => 'Такой email занят.'],
 

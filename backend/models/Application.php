@@ -107,9 +107,23 @@ class Application extends \yii\db\ActiveRecord
 	public function getAllStatus()
 	{
 		$stat = Status::find()->select(['id', 'name'])->all();
-		foreach ($stat as $item) {
-			$status[$item->id] = $item->name;
-		}
+		$status = ArrayHelper::map($stat, 'id', 'name');
 		return $status;
+	}
+
+	public function getColor($data)
+	{
+		switch ($data->status->id) {
+			case 1:
+				return '<span class="badge badge-primary">' . $data->status->name . '</span>';
+			case 2:
+				return '<span class="badge badge-info">' . $data->status->name . '</span>';
+			case 3:
+				return '<span class="badge badge-success">' . $data->status->name . '</span>';
+			case 4:
+				return '<span class="badge badge-danger">' . $data->status->name . '</span>';
+			default:
+				return '<span class="badge badge-light">' . $data->status->name . '</span>';
+		}
 	}
 }

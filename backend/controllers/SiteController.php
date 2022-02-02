@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Roles;
+use backend\models\SignupForm;
 use common\models\Dashboard;
 use common\models\LoginForm;
 use Yii;
@@ -26,7 +27,7 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['login', 'error', 'signup'],
                         'allow' => true,
                     ],
                     [
@@ -117,4 +118,26 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+	/**
+	 * Signs user up.
+	 *
+	 * @return mixed
+	 */
+	public function actionSignup()
+	{
+		$model = new SignupForm();
+
+
+		if ($model->load(Yii::$app->request->post()) && $model->signup()) {
+			Yii::$app->session->setFlash('success', 'Спасибо за регистрацию');
+			return $this->goHome();
+		}
+
+		$this->layout = 'blank';
+
+		return $this->render('signup', [
+			'model' => $model,
+		]);
+	}
 }

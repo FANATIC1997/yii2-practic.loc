@@ -16,6 +16,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="application-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
+	<? if(!empty($error)): ?>
+        <div class="alert alert-danger" role="alert">
+			<?=$error?>
+        </div>
+	<? endif; ?>
 
     <p>
         <?= Html::a('Создать заявку', ['create'], ['class' => 'btn btn-success']) ?>
@@ -28,6 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+            'emptyText' => 'Заявки не найдены',
+			'summary' => false,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'theme',
@@ -52,18 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
 				'attribute' => 'status',
                 'content' => function ($data){
-                    switch ($data->status->id){
-                        case 1:
-                            return '<span class="badge badge-primary">'.$data->status->name.'</span>';
-                        case 2:
-                            return '<span class="badge badge-info">'.$data->status->name.'</span>';
-                        case 3:
-                            return '<span class="badge badge-success">'.$data->status->name.'</span>';
-                        case 4:
-                            return '<span class="badge badge-danger">'.$data->status->name.'</span>';
-                        default:
-                            return '<span class="badge badge-light">'.$data->status->name.'</span>';
-                    }
+					return $data->getColor($data);
                 }
             ],
             [
@@ -78,6 +74,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?= GridView::widget([
 			'dataProvider' => $dataProvider,
 			'filterModel' => $searchModel,
+			'emptyText' => 'Заявки не найдены',
+			'summary' => false,
 			'columns' => [
 				['class' => 'yii\grid\SerialColumn'],
 				'theme',
@@ -95,8 +93,8 @@ $this->params['breadcrumbs'][] = $this->title;
 				],
 				[
 					'attribute' => 'status',
-					'value' => function ($data) {
-						return $data->status->name;
+					'content' => function ($data){
+						return $data->getColor($data);
 					}
 				],
 				[
