@@ -51,9 +51,20 @@ $this->params['breadcrumbs'][] = $this->title;
 			],
             [
 				'attribute' => 'status',
-				'value' => function ($data) {
-					return $data->status->name;
-				}
+                'content' => function ($data){
+                    switch ($data->status->id){
+                        case 1:
+                            return '<span class="badge badge-primary">'.$data->status->name.'</span>';
+                        case 2:
+                            return '<span class="badge badge-info">'.$data->status->name.'</span>';
+                        case 3:
+                            return '<span class="badge badge-success">'.$data->status->name.'</span>';
+                        case 4:
+                            return '<span class="badge badge-danger">'.$data->status->name.'</span>';
+                        default:
+                            return '<span class="badge badge-light">'.$data->status->name.'</span>';
+                    }
+                }
             ],
             [
                 'class' => ActionColumn::className(),

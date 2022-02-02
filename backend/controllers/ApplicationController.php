@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Application;
 use backend\models\ApplicationSearch;
+use backend\models\Log;
 use backend\models\Organization;
 use backend\models\Status;
 use backend\models\User;
@@ -80,8 +81,19 @@ class ApplicationController extends Controller
      */
     public function actionView($id)
     {
+		$log = new Log();
+		$model = $this->findModel($id);
+		if ($this->request->isPost) {
+			if ($log->load($this->request->post())) {
+				return $this->render('view', [
+					'model' => $model,
+					'log' => $log,
+				]);
+			}
+		}
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+			'log' => $log,
         ]);
     }
 
