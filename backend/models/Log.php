@@ -108,9 +108,39 @@ class Log extends ActiveRecord
 
 	public function createLog($model)
 	{
+
 		$this->status_id = $model->status_id;
 		$this->user_id = Yii::$app->user->getId();
 		$this->application_id = $model->id;
+
+		if(empty($this->comment)) {
+			$this->comment = 'Изменил: ';
+			if ($model->user_id != $model->getOldAttribute('user_id')) {
+				$this->old_user_id = $model->getOldAttribute('user_id');
+			}
+			if ($model->theme != $model->getOldAttribute('theme')) {
+				$this->comment .= 'тему';
+			}
+			if ($model->description != $model->getOldAttribute('description')) {
+				$this->comment .= 'описание';
+			}
+			if ($model->user_id != $model->getOldAttribute('user_id')) {
+				$this->comment .= 'пользователя на ' . $model->user->username;
+			}
+			if ($model->manager_id != $model->getOldAttribute('manager_id')) {
+				$this->comment .= 'менеджера на ' . $model->manager->username;
+			}
+		}
+		if ($model->status_id != $model->getOldAttribute('status_id')) {
+			$this->comment .= ' статус на ' . $model->status->name;
+			$mail = Yii::$app->mailer->compose()
+				->setFrom(Yii::$app->params['adminEmail'])
+				->setTo($model->user->email)
+				->setSubject('Изменения в вашей заявки')
+				->setTextBody('В вашей заявке на тему "' . $model->theme . '" изменили статус');
+			$mail->send();
+			//mail($model->user->email, 'Изменения в вашей заявки', 'В вашей заявке на тему "' . $model->theme . '" изменили статус', 'From: '.Yii::$app->params['adminEmail']);
+		}
 		$this->save();
 		$this->comment = null;
 	}
@@ -139,6 +169,28 @@ class Log extends ActiveRecord
 			$str .= '</span>';
 
 			return $str;
+		} else {
+			if($data->comment != 'Создание заявки')
+			{
+				$log = static::find()->where(['application_id' => $data->application_id])
+					->andWhere(['status_id' => 1])->orderBy('id')->one();
+
+				$startDate = new DateTime(date('Y-m-d H:m:s', $data->created_at));
+				$endDate = new DateTime(date('Y-m-d H:m:s', $log->created_at));
+
+				$interval = $startDate->diff($endDate);
+
+				$str = '<br><span class="badge badge-info" data-toggle="tooltip" data-placement="top" title="Время реагирования">';
+				$str .= ($interval->y != 0) ? $interval->format('%y л '): '';
+				$str .= ($interval->m != 0) ? $interval->format('%m м '): '';
+				$str .= ($interval->d != 0) ? $interval->format('%dдн '): '';
+				$str .= ($interval->h != 0) ? $interval->format('%h ч '): '';
+				$str .= ($interval->i != 0) ? $interval->format('%i мин '): '';
+				$str .= ($interval->s != 0) ? $interval->format('%sс '): '';
+				$str .= '</span>';
+
+				return $str;
+			}
 		}
 		return null;
 	}

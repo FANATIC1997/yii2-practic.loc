@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\models\Application;
 use backend\models\ApplicationSearch;
 use backend\models\Log;
+use backend\models\Message;
 use backend\models\Organization;
 use backend\models\Status;
 use backend\models\User;
@@ -14,6 +15,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * ApplicationController implements the CRUD actions for Application model.
@@ -43,7 +45,7 @@ class ApplicationController extends Controller
 							'roles' => ['admin', 'manager'],
 						],
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager-ajax', 'get-manager-rnd'],
+							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager-ajax', 'get-manager-rnd', 'message-create'],
 							'allow' => true,
 							'roles' => ['manager', 'user', 'admin']
 						],
@@ -90,6 +92,9 @@ class ApplicationController extends Controller
     {
 		$log = new Log();
 
+		$message = new Message();
+		$messages = Message::find()->where(['application_id'=>$id])->orderBy('created_at')->all();
+
 		$query = Log::find()->where(['application_id' => $id]);
 		$dataProvider = new ActiveDataProvider([
 			'query' => $query,
@@ -110,12 +115,12 @@ class ApplicationController extends Controller
 			{
 				$this->actionClose($model);
 			}
-			$log->load($this->request->post());
-			$log->createLog($model);
 		}
         return $this->render('view', [
             'model' => $model,
 			'log' => $log,
+			'messages' => $messages,
+			'message' => $message,
 			'logs' => $logs,
 			'error' => $this->request->get('error')
         ]);
@@ -179,12 +184,20 @@ class ApplicationController extends Controller
 		{
 			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Заявка уже закрыта, ее не возможно изменить']);
 		}
-		if(Yii::$app->user->can('manager') and $model->user_id != Yii::$app->user->getId())
+		elseif(!Yii::$app->user->can('admin') and $model->user_id != Yii::$app->user->getId())
 		{
 			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Вы не являетесь создателем данной заявки']);
 		}
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+			$log = new Log();
+			$log->createLog($model);
+			if($model->save()) {
+				return $this->redirect(['view', 'id' => $model->id]);
+			} else {
+				return $this->render('update', [
+					'model' => $model,
+				]);
+			}
         }
 
         return $this->render('update', [
@@ -203,19 +216,21 @@ class ApplicationController extends Controller
     {
         $model = $this->findModel($id);
 
-		if(Yii::$app->user->can('manager'))
+		if(Yii::$app->user->can('admin'))
+		{
+			$model->delete();
+		}
+		elseif(Yii::$app->user->can('manager'))
 		{
 			if($model->user_id != Yii::$app->user->getId())
 			{
 				return $this->redirect(['index', 'error' => 'Вы не являетесь создателем данной заявки']);
 			}
 		}
-		if(Yii::$app->user->can('user'))
+		elseif(Yii::$app->user->can('user'))
 		{
 			return $this->redirect(['index', 'error' => 'Вы не можете удалять заявки']);
 		}
-
-		$model->delete();
 
         return $this->redirect(['index']);
     }
@@ -260,6 +275,9 @@ class ApplicationController extends Controller
 	{
 		$app = $model;
 		$app->status_id = 2;
+		$log = new Log();
+		$log->load($this->request->post());
+		$log->createLog($model);
 		$app->save();
 	}
 
@@ -267,6 +285,9 @@ class ApplicationController extends Controller
 	{
 		$app = $model;
 		$app->status_id = 3;
+		$log = new Log();
+		$log->load($this->request->post());
+		$log->createLog($model);;
 		$app->save();
 	}
 
@@ -274,7 +295,46 @@ class ApplicationController extends Controller
 	{
 		$app = $model;
 		$app->status_id = 4;
+		$log = new Log();
+		$log->load($this->request->post());
+		$log->createLog($model);
 		$app->save();
+	}
+
+	public function actionMessageCreate()
+	{
+		$model = new Message();
+		$request = \Yii::$app->getRequest();
+		if ($request->isPost && $model->load($request->post())) {
+			\Yii::$app->response->format = Response::FORMAT_JSON;
+			$message = new Message();
+			$application = Application::findOne($model->application_id);
+			if ($model->save()) {
+				$messages = Message::find()->where(['application_id'=> $model->application_id])->orderBy('created_at')->all();
+
+				$app = Application::findOne($model->application_id);
+
+				if(Yii::$app->user->getId() != $app->user_id)
+				{
+					$user = User::findOne($app->user_id);
+					$mail = Yii::$app->mailer->compose()
+						->setFrom(Yii::$app->params['adminEmail'])
+						->setTo($user->email)
+						->setSubject('По вашему обращению')
+						->setTextBody('Вам прислали новое сообщение по вашему обращению');
+					$mail->send();
+				}
+
+				return $this->renderAjax('message', [
+					'message' => $message,
+					'messages' => $messages,
+					'application' => $application,
+				]);
+			} else {
+				return ['success' => 'false'];
+			}
+		}
+		return ['success' => 'false'];
 	}
 
     /**

@@ -3,13 +3,15 @@
 use backend\models\Application;
 use yii\bootstrap4\ActiveForm;
 use yii\grid\GridView;
-use yii\helpers\Html;
+use yii\bootstrap4\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Application */
 /* @var $log backend\models\Log */
 /* @var $logs backend\models\Log */
+/* @var $message backend\models\Message */
+/* @var $messages backend\models\Message */
 
 $this->title = $model->theme;
 $this->params['breadcrumbs'][] = ['label' => 'Заявки', 'url' => ['index']];
@@ -26,30 +28,15 @@ $this->params['breadcrumbs'][] = $model->theme;
 	<? endif; ?>
     <div class="row">
         <div class="col mb-2">
-			<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+			<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mb-2']) ?>
 			<?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-				'class' => 'btn btn-danger',
+				'class' => 'btn btn-danger mb-2',
 				'data' => [
 					'confirm' => 'Вы уверены что хотите удалить?',
 					'method' => 'post',
 				],
 			]) ?>
-        </div>
-        <div class="col">
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-					<?= Html::a('История', '#history', ['class' => 'nav-link active', 'id' => 'history-tab', 'data-toggle' => 'tab', 'role' => 'tab', 'aria-controls' => 'history', 'aria-selected' => 'true']) ?>
-                </li>
-                <li class="nav-item">
-					<?= Html::a('Чат', '#message', ['class' => 'nav-link', 'id' => 'message-tab', 'data-toggle' => 'tab', 'role' => 'tab', 'aria-controls' => 'message', 'aria-selected' => 'false']) ?>
-                </li>
-            </ul>
-        </div>
-    </div>
 
-
-    <div class="row">
-        <div class="col">
 			<?= DetailView::widget([
 				'model' => $model,
 				'attributes' => [
@@ -89,10 +76,24 @@ $this->params['breadcrumbs'][] = $model->theme;
 				],
 			]) ?>
         </div>
-        <div class="col">
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+    </div>
 
+
+    <div class="row">
+        <div class="col mb-2">
+            <ul class="nav nav-pills mb-2" id="pills-tab" role="tablist">
+                <li class="nav-item">
+					<?= Html::a('История', '#pills-history', ['class' => 'nav-link active', 'id' => 'pills-history-tab', 'data-toggle' => 'pill', 'role' => 'tab', 'aria-controls' => 'pills-history', 'aria-selected' => 'true']) ?>
+                </li>
+				<? if ($model->status_id < 4): ?>
+                    <li class="nav-item">
+						<?= Html::a('Чат', '#pills-message', ['class' => 'nav-link', 'id' => 'pills-message-tab', 'data-toggle' => 'pill', 'role' => 'tab', 'aria-controls' => 'pills-message', 'aria-selected' => 'false']) ?>
+                    </li>
+				<? endif; ?>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-history" role="tabpanel"
+                     aria-labelledby="pills-history-tab">
 					<?= GridView::widget([
 						'dataProvider' => $logs,
 						'summary' => false,
@@ -174,11 +175,18 @@ $this->params['breadcrumbs'][] = $model->theme;
 				<?php ActiveForm::end(); ?>
 				<? endif; ?>
                     </p>
+                </div>
+				<? if ($model->status_id < 4): ?>
+                <div class="tab-pane fade" id="pills-message" role="tabpanel" aria-labelledby="pills-message-tab">
+					<?= $this->render('message', [
+						'message' => $message,
+						'messages' => $messages,
+						'application' => $model,
+					]) ?>
+					<? endif; ?>
+                </div>
+
             </div>
-            <div class="tab-pane fade" id="message" role="tabpanel" aria-labelledby="message-tab">
-                <p>чат пока не готов</p>
-            </div>
-        </div>
         </div>
     </div>
 

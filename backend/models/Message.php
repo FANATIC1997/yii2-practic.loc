@@ -45,7 +45,7 @@ class Message extends ActiveRecord
     public function rules()
     {
         return [
-            [['application_id', 'user_id', 'status_id', 'message'], 'required'],
+            [['application_id', 'user_id', 'status_id', 'message'], 'required', 'message' => 'Поле является обязательным'],
             [['application_id', 'user_id', 'status_id'], 'integer'],
             [['message'], 'string', 'max' => 255],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::className(), 'targetAttribute' => ['application_id' => 'id']],
@@ -64,9 +64,9 @@ class Message extends ActiveRecord
             'application_id' => 'Application ID',
             'user_id' => 'User ID',
             'status_id' => 'Status ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
-            'message' => 'Message',
+            'created_at' => 'Создано',
+            'updated_at' => 'Изменено',
+            'message' => 'Сообщение',
         ];
     }
 
