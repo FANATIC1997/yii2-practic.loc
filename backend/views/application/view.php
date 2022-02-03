@@ -19,9 +19,9 @@ $this->params['breadcrumbs'][] = $model->theme;
 <div class="application-view">
 
     <h1><?= Html::encode($model->theme) ?></h1>
-	<? if(!empty($error)): ?>
+	<? if (!empty($error)): ?>
         <div class="alert alert-danger" role="alert">
-            <?=$error?>
+			<?= $error ?>
         </div>
 	<? endif; ?>
     <div class="row">
@@ -36,7 +36,14 @@ $this->params['breadcrumbs'][] = $model->theme;
 			]) ?>
         </div>
         <div class="col">
-
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+					<?= Html::a('История', '#history', ['class' => 'nav-link active', 'id' => 'history-tab', 'data-toggle' => 'tab', 'role' => 'tab', 'aria-controls' => 'history', 'aria-selected' => 'true']) ?>
+                </li>
+                <li class="nav-item">
+					<?= Html::a('Чат', '#message', ['class' => 'nav-link', 'id' => 'message-tab', 'data-toggle' => 'tab', 'role' => 'tab', 'aria-controls' => 'message', 'aria-selected' => 'false']) ?>
+                </li>
+            </ul>
         </div>
     </div>
 
@@ -83,87 +90,95 @@ $this->params['breadcrumbs'][] = $model->theme;
 			]) ?>
         </div>
         <div class="col">
-			<?= GridView::widget([
-				'dataProvider' => $logs,
-				'summary' => false,
-				'columns' => [
-					[
-						'attribute' => 'user_id',
-						'value' => function ($data) {
-							return $data->user->username;
-						}
-					],
-					[
-						'attribute' => 'status_id',
-						'content' => function ($data) {
-                            $ap = new Application();
-                            $str = $ap->getColor($data);
-                            $react = $data->getBackStatus($data);
-							return $str.$react;
-						}
-					],
-					'comment',
-					[
-						'attribute' => 'created_at',
-						'value' => function ($data) {
-							return date('d.m.Y H:i:s', $data->created_at);
-						}
-					],
-				],
-			]); ?>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
 
-            <p>
-				<? if ($model->status_id < 4): ?>
-                    <?php $form = ActiveForm::begin(); ?>
+					<?= GridView::widget([
+						'dataProvider' => $logs,
+						'summary' => false,
+						'columns' => [
+							[
+								'attribute' => 'user_id',
+								'value' => function ($data) {
+									return $data->user->username;
+								}
+							],
+							[
+								'attribute' => 'status_id',
+								'content' => function ($data) {
+									$ap = new Application();
+									$str = $ap->getColor($data);
+									$react = $data->getBackStatus($data);
+									return $str . $react;
+								}
+							],
+							'comment',
+							[
+								'attribute' => 'created_at',
+								'value' => function ($data) {
+									return date('d.m.Y H:i:s', $data->created_at);
+								}
+							],
+						],
+					]); ?>
 
-                        <? if (Yii::$app->user->can('manager')): ?>
-                            <? if ($model->status_id == 1): ?>
+                    <p>
+						<? if ($model->status_id < 4): ?>
+						<?php $form = ActiveForm::begin(); ?>
 
-                                <div class="form-group">
-                                    <?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
-                                </div>
+						<? if (Yii::$app->user->can('manager')): ?>
+						<? if ($model->status_id == 1): ?>
 
-                                <div class="form-group">
-                                    <?= Html::submitButton('В работу', ['class' => 'btn btn-success']) ?>
-                                </div>
+                    <div class="form-group">
+						<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
+                    </div>
 
-                            <? elseif ($model->status_id == 2): ?>
+                    <div class="form-group">
+						<?= Html::submitButton('В работу', ['class' => 'btn btn-success']) ?>
+                    </div>
 
-                                <div class="form-group">
-									<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
-                                </div>
+				<? elseif ($model->status_id == 2): ?>
 
-                                <div class="form-group">
-                                    <?= Html::submitButton('Завершить', ['class' => 'btn btn-success']) ?>
-                                </div>
+                    <div class="form-group">
+						<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
+                    </div>
 
-                            <? elseif ($model->status_id == 3 and Yii::$app->user->getId() == $model->user_id): ?>
+                    <div class="form-group">
+						<?= Html::submitButton('Завершить', ['class' => 'btn btn-success']) ?>
+                    </div>
 
-                                <div class="form-group">
-									<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
-                                </div>
-                                <div class="form-group">
-									<?= Html::submitButton('Закрыть', ['class' => 'btn btn-success']) ?>
-                                </div>
+				<? elseif ($model->status_id == 3 and Yii::$app->user->getId() == $model->user_id): ?>
 
-                            <? endif; ?>
-                        <? endif; ?>
+                    <div class="form-group">
+						<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
+                    </div>
+                    <div class="form-group">
+						<?= Html::submitButton('Закрыть', ['class' => 'btn btn-success']) ?>
+                    </div>
 
-                    <? if (Yii::$app->user->can('user')): ?>
-                        <? if ($model->status_id == 3): ?>
+				<? endif; ?>
+				<? endif; ?>
 
-                            <div class="form-group">
-								<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
-                            </div>
-                            <div class="form-group">
-                                <?= Html::submitButton('Закрыть', ['class' => 'btn btn-success']) ?>
-                            </div>
+				<? if (Yii::$app->user->can('user')): ?>
+					<? if ($model->status_id == 3): ?>
 
-                        <? endif; ?>
-                    <? endif; ?>
-                <?php ActiveForm::end(); ?>
-                <? endif; ?>
-            </p>
+                        <div class="form-group">
+							<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
+                        </div>
+                        <div class="form-group">
+							<?= Html::submitButton('Закрыть', ['class' => 'btn btn-success']) ?>
+                        </div>
+
+					<? endif; ?>
+				<? endif; ?>
+				<?php ActiveForm::end(); ?>
+				<? endif; ?>
+                    </p>
+            </div>
+            <div class="tab-pane fade" id="message" role="tabpanel" aria-labelledby="message-tab">
+                <p>чат пока не готов</p>
+            </div>
+        </div>
         </div>
     </div>
 

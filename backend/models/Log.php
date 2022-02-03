@@ -132,10 +132,10 @@ class Log extends ActiveRecord
 			$str = '<br><span class="badge badge-info" data-toggle="tooltip" data-placement="top" title="Время реагирования">';
 			$str .= ($interval->y != 0) ? $interval->format('%y л '): '';
 			$str .= ($interval->m != 0) ? $interval->format('%m м '): '';
-			$str .= ($interval->d != 0) ? $interval->format('%d д '): '';
+			$str .= ($interval->d != 0) ? $interval->format('%dдн '): '';
 			$str .= ($interval->h != 0) ? $interval->format('%h ч '): '';
 			$str .= ($interval->i != 0) ? $interval->format('%i мин '): '';
-			$str .= ($interval->s != 0) ? $interval->format('%s сек '): '';
+			$str .= ($interval->s != 0) ? $interval->format('%sс '): '';
 			$str .= '</span>';
 
 			return $str;
