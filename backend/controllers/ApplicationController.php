@@ -180,12 +180,13 @@ class ApplicationController extends Controller
     {
 
         $model = $this->findModel($id);
-		if(Yii::$app->user->can('user') and $model->status_id == 4)
-		{
-			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Заявка уже закрыта, ее не возможно изменить']);
-		}
-		elseif(!Yii::$app->user->can('admin') and $model->user_id != Yii::$app->user->getId())
-		{
+		if(Yii::$app->user->can('admin')) {
+
+		} elseif(Yii::$app->user->can('user')) {
+			if($model->status_id == 4) {
+				return $this->redirect(['view', 'id' => $model->id, 'error' => 'Заявка уже закрыта, ее не возможно изменить']);
+			}
+		} elseif(Yii::$app->user->can('manager')) {
 			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Вы не являетесь создателем данной заявки']);
 		}
         if ($this->request->isPost && $model->load($this->request->post())) {

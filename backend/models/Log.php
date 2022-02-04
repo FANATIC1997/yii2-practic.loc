@@ -22,6 +22,12 @@ use yii\db\ActiveRecord;
 class Log extends ActiveRecord
 {
 
+	const YEAR_SEC = 31556926;
+	const MONTH_SEC = 2629743;
+	const DAY_SEC = 86400;
+	const HOUR_SEC = 3600;
+	const MINUTE_SEC = 60;
+
 	public function behaviors()
 	{
 		return [
@@ -113,7 +119,7 @@ class Log extends ActiveRecord
 		$this->user_id = Yii::$app->user->getId();
 		$this->application_id = $model->id;
 
-		if(empty($this->comment)) {
+		if (empty($this->comment)) {
 			$this->comment = 'Изменил: ';
 			if ($model->user_id != $model->getOldAttribute('user_id')) {
 				$this->old_user_id = $model->getOldAttribute('user_id');
@@ -132,17 +138,49 @@ class Log extends ActiveRecord
 			}
 		}
 		if ($model->status_id != $model->getOldAttribute('status_id')) {
-			$this->comment .= ' статус на ' . $model->status->name;
-			$mail = Yii::$app->mailer->compose()
-				->setFrom(Yii::$app->params['adminEmail'])
-				->setTo($model->user->email)
-				->setSubject('Изменения в вашей заявки')
-				->setTextBody('В вашей заявке на тему "' . $model->theme . '" изменили статус');
-			$mail->send();
-			//mail($model->user->email, 'Изменения в вашей заявки', 'В вашей заявке на тему "' . $model->theme . '" изменили статус', 'From: '.Yii::$app->params['adminEmail']);
+			$this->comment .= ' Новый статус: ' . $model->status->name;
+			if(Yii::$app->user->getId() != $model->user_id) {
+				Yii::$app->mailer->compose()
+					->setFrom(Yii::$app->params['adminEmail'])
+					->setTo($model->user->email)
+					->setSubject('Изменения в вашей заявки')
+					->setTextBody('В вашей заявке на тему "' . $model->theme . '" изменили статус')
+					->send();
+			}
 		}
 		$this->save();
 		$this->comment = null;
+	}
+
+	private function getStrTime($startDate, $endDate)
+	{
+		$diff = $startDate - $endDate;
+
+		$second = $diff;
+
+		$years = floor($diff / self::YEAR_SEC);
+
+		$month = floor($diff / self::MONTH_SEC);
+
+		$days = floor($diff / self::DAY_SEC);
+
+		$hours = floor($diff / self::HOUR_SEC);
+
+		$minutes = floor($diff / self::MINUTE_SEC);
+
+		$str = '<br><span class="badge badge-warning" data-toggle="tooltip" data-placement="top" title="Время реагирования">';
+
+		$str .= ($years != 0) ? $years . ' л ' : '';
+		$str .= ($month != 0) ? $month - ($years * 12) . ' м ' : '';
+		$str .= ($days != 0) ? $days - ($month * 30) . ' дн ' : '';
+		$str .= ($hours != 0) ? $hours - ($days * 24) . ' ч ' : '';
+		$str .= ($minutes != 0) ? $minutes - ($hours * 60) . ' мин ' : '';
+		$str .= ($second != 0) ? $second - ($minutes * 60) . 'с ' : '';
+
+
+		$str .= '</span>';
+
+		return $str;
 	}
 
 	/**
@@ -150,47 +188,14 @@ class Log extends ActiveRecord
 	 */
 	public function getBackStatus($data)
 	{
-		if($data->status_id != 1) {
+		if ($data->status_id != 1) {
 			$log = static::find()->where(['application_id' => $data->application_id])
 				->andWhere(['status_id' => $data->status_id - 1])->one();
 
-			$startDate = new DateTime(date('Y-m-d H:m:s', $data->created_at));
-			$endDate = new DateTime(date('Y-m-d H:m:s', $log->created_at));
+			$startDate = $data->created_at;
+			$endDate = $log->created_at;
 
-			$interval = $startDate->diff($endDate);
-
-			$str = '<br><span class="badge badge-info" data-toggle="tooltip" data-placement="top" title="Время реагирования">';
-			$str .= ($interval->y != 0) ? $interval->format('%y л '): '';
-			$str .= ($interval->m != 0) ? $interval->format('%m м '): '';
-			$str .= ($interval->d != 0) ? $interval->format('%dдн '): '';
-			$str .= ($interval->h != 0) ? $interval->format('%h ч '): '';
-			$str .= ($interval->i != 0) ? $interval->format('%i мин '): '';
-			$str .= ($interval->s != 0) ? $interval->format('%sс '): '';
-			$str .= '</span>';
-
-			return $str;
-		} else {
-			if($data->comment != 'Создание заявки')
-			{
-				$log = static::find()->where(['application_id' => $data->application_id])
-					->andWhere(['status_id' => 1])->orderBy('id')->one();
-
-				$startDate = new DateTime(date('Y-m-d H:m:s', $data->created_at));
-				$endDate = new DateTime(date('Y-m-d H:m:s', $log->created_at));
-
-				$interval = $startDate->diff($endDate);
-
-				$str = '<br><span class="badge badge-info" data-toggle="tooltip" data-placement="top" title="Время реагирования">';
-				$str .= ($interval->y != 0) ? $interval->format('%y л '): '';
-				$str .= ($interval->m != 0) ? $interval->format('%m м '): '';
-				$str .= ($interval->d != 0) ? $interval->format('%dдн '): '';
-				$str .= ($interval->h != 0) ? $interval->format('%h ч '): '';
-				$str .= ($interval->i != 0) ? $interval->format('%i мин '): '';
-				$str .= ($interval->s != 0) ? $interval->format('%sс '): '';
-				$str .= '</span>';
-
-				return $str;
-			}
+			return self::getStrTime($startDate, $endDate);
 		}
 		return null;
 	}

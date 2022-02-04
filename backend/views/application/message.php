@@ -9,17 +9,20 @@ use yii\bootstrap4\Html;
 
 ?>
 
-    <div class="messages clearfix" style="font-size: 1.5em; overflow-y: auto; max-height: 500px;" id="messages-scroll">
-		<? $userId = Yii::$app->user->getId(); ?>
+<div class="messages clearfix" style="font-size: 1.5em; overflow-y: auto; max-height: 500px;" id="messages-scroll">
+	<? $userId = Yii::$app->user->getId(); ?>
+	<? if (!empty($messages)): ?>
 		<? foreach ($messages as $key => $item): ?>
 			<? if ($item->user_id == $userId): ?>
 				<? if ($messages[$key - 1]->user_id == $item->user_id and $messages[$key - 1]->status_id == $item->status_id): ?>
                     <div class="item-message clearfix">
                         <div class="float-right">
-                            <div class="badge badge-primary p-2 mb-1 text-wrap float-right text-left" style="width: auto; max-width: 21rem;">
+                            <div class="badge badge-primary p-2 mb-1 text-wrap float-right text-left"
+                                 style="width: auto; max-width: 21rem;">
 								<?= $item->message ?>
                                 <div class="clearfix"></div>
-                                <span class="float-right mt-1" style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
+                                <span class="float-right mt-1"
+                                      style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
                             </div>
                         </div>
                     </div>
@@ -29,12 +32,15 @@ use yii\bootstrap4\Html;
                             <small class="text-muted clearfix">
                                 <span class="float-right"><?= $item->user->username ?></span>
                                 <div class="clearfix"></div>
-                                <span class="float-right mb-1" style="font-size: 0.8em;">Статус заявки: <?= $item->status->name ?></span>
+                                <span class="float-right mb-1"
+                                      style="font-size: 0.8em;">Статус заявки: <?= $item->status->name ?></span>
                             </small>
-                            <div class="badge badge-primary p-2 mb-1 text-wrap float-right text-left" style="width: auto; max-width: 21rem;">
+                            <div class="badge badge-primary p-2 mb-1 text-wrap float-right text-left"
+                                 style="width: auto; max-width: 21rem;">
 								<?= $item->message ?>
                                 <div class="clearfix"></div>
-                                <span class="float-right mt-1" style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
+                                <span class="float-right mt-1"
+                                      style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
                             </div>
                         </div>
                     </div>
@@ -46,7 +52,8 @@ use yii\bootstrap4\Html;
                             <div class="badge badge-primary p-2 mb-1">
 								<?= $item->message ?>
                                 <div class="clearfix"></div>
-                                <span class="float-right mt-1" style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
+                                <span class="float-right mt-1"
+                                      style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
                             </div>
                         </div>
                     </div>
@@ -61,15 +68,23 @@ use yii\bootstrap4\Html;
                             <div class="badge badge-primary p-2 mb-1">
 								<?= $item->message ?>
                                 <div class="clearfix"></div>
-                                <span class="float-right mt-1" style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
+                                <span class="float-right mt-1"
+                                      style="font-size: 0.6em;"><?= date('d.m.y H:i:s', $item->created_at) ?></span>
                             </div>
                         </div>
                     </div>
 				<? endif; ?>
 			<? endif; ?>
 		<? endforeach; ?>
-    </div>
 
+	<? else: ?>
+    <div class="alert alert-info" role="alert">
+        Сообщения не найдены
+    </div>
+	<? endif; ?>
+</div>
+
+<? if ($application->status_id < 4): ?>
 	<?php $form = ActiveForm::begin(['action' => 'message-create', 'id' => 'message-form', 'enableAjaxValidation' => false]); ?>
     <div class="form-group d-none">
 		<?
@@ -86,7 +101,8 @@ use yii\bootstrap4\Html;
 		<?= $form->field($message, 'message')->textInput(['maxlength' => true]) ?>
     </div>
     <div class="form-group">
-		<?= Html::Button('Отправить', ['class' => 'btn btn-success', 'id'=>'button-submit']) ?>
+		<?= Html::Button('Отправить', ['class' => 'btn btn-success', 'id' => 'button-submit']) ?>
     </div>
 
 	<?php ActiveForm::end(); ?>
+<? endif; ?>

@@ -28,15 +28,35 @@ $this->params['breadcrumbs'][] = $model->theme;
 	<? endif; ?>
     <div class="row">
         <div class="col mb-2">
-			<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mb-2']) ?>
-			<?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-				'class' => 'btn btn-danger mb-2',
-				'data' => [
-					'confirm' => 'Вы уверены что хотите удалить?',
-					'method' => 'post',
-				],
-			]) ?>
 
+			<? if (Yii::$app->user->can('manager')): ?>
+				<? if (Yii::$app->user->getId() == $model->user_id): ?>
+					<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mb-2']) ?>
+					<?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+						'class' => 'btn btn-danger mb-2',
+						'data' => [
+							'confirm' => 'Вы уверены что хотите удалить?',
+							'method' => 'post',
+						],
+					]) ?>
+				<? endif; ?>
+			<? endif; ?>
+			<? if (Yii::$app->user->can('admin')): ?>
+				<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mb-2']) ?>
+				<?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+					'class' => 'btn btn-danger mb-2',
+					'data' => [
+						'confirm' => 'Вы уверены что хотите удалить?',
+						'method' => 'post',
+					],
+				]) ?>
+
+			<? endif; ?>
+			<? if (Yii::$app->user->can('user')): ?>
+				<? if (Yii::$app->user->getId() == $model->user_id): ?>
+					<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mb-2']) ?>
+				<? endif; ?>
+			<? endif; ?>
 			<?= DetailView::widget([
 				'model' => $model,
 				'attributes' => [
@@ -85,11 +105,9 @@ $this->params['breadcrumbs'][] = $model->theme;
                 <li class="nav-item">
 					<?= Html::a('История', '#pills-history', ['class' => 'nav-link active', 'id' => 'pills-history-tab', 'data-toggle' => 'pill', 'role' => 'tab', 'aria-controls' => 'pills-history', 'aria-selected' => 'true']) ?>
                 </li>
-				<? if ($model->status_id < 4): ?>
-                    <li class="nav-item">
-						<?= Html::a('Чат', '#pills-message', ['class' => 'nav-link', 'id' => 'pills-message-tab', 'data-toggle' => 'pill', 'role' => 'tab', 'aria-controls' => 'pills-message', 'aria-selected' => 'false']) ?>
-                    </li>
-				<? endif; ?>
+                <li class="nav-item">
+					<?= Html::a('Чат', '#pills-message', ['class' => 'nav-link', 'id' => 'pills-message-tab', 'data-toggle' => 'pill', 'role' => 'tab', 'aria-controls' => 'pills-message', 'aria-selected' => 'false']) ?>
+                </li>
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-history" role="tabpanel"
@@ -176,14 +194,12 @@ $this->params['breadcrumbs'][] = $model->theme;
 				<? endif; ?>
                     </p>
                 </div>
-				<? if ($model->status_id < 4): ?>
                 <div class="tab-pane fade" id="pills-message" role="tabpanel" aria-labelledby="pills-message-tab">
 					<?= $this->render('message', [
 						'message' => $message,
 						'messages' => $messages,
 						'application' => $model,
 					]) ?>
-					<? endif; ?>
                 </div>
 
             </div>

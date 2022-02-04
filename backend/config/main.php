@@ -12,15 +12,21 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [],
-	'homeUrl' => '/adminpanel',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
-			'baseUrl' => '/adminpanel',
+			'baseUrl' => '',
         ],
 		'urlManager' => [
 			'enablePrettyUrl' => true,
 			'showScriptName' => false,
+			'rules' => [
+				'application' => 'application/index',
+				'user' => 'user/index',
+				'organization' => 'organization/index',
+				'cabinet' => 'cabinet/index',
+				'<controller:(application|user|organization|cabinet)>/<action:(create|view|update|delete)>/<id:\d+>' => '<controller>/<action>'
+			],
 		],
         'user' => [
             'identityClass' => 'common\models\User',
