@@ -68,8 +68,8 @@ AppAsset::register($this);
     <div class="container">
         <? if($this->context->id != 'cabinet'): ?>
         <?= Breadcrumbs::widget([
-                'homeLink' => ['label' => 'Dashboard', 'url' => '/backend/web'],
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                'homeLink' => ['label' => 'Dashboard', 'url' => '/'],
+            'links' => $this->params['breadcrumbs'] ?? [],
         ]) ?>
         <? endif; ?>
         <?= $content ?>

@@ -46,7 +46,7 @@ class ApplicationSearch extends Application
     public function search($params)
     {
 		if(Yii::$app->user->can('admin')) {
-			$query = Application::find()->joinWith('organization o')->joinWith('user u')->joinWith('status st')->orderBy('status_id');
+			$query = Application::find()->joinWith('organization o')->joinWith('user u')->joinWith('manager m')->joinWith('status st')->orderBy('status_id');
 		} elseif(Yii::$app->user->can('manager')) {
 			$query = Application::find()->joinWith('organization o')->joinWith('user u')->joinWith('status st')->where(['manager_id' => Yii::$app->user->getId()])->orderBy('status_id');
 		} else {
@@ -104,7 +104,7 @@ class ApplicationSearch extends Application
         $query->andFilterWhere(['like', 'theme', $this->theme])
             ->andFilterWhere(['like', 'o.name', $this->organization])
             ->andFilterWhere(['like', 'u.username', $this->user])
-            ->andFilterWhere(['like', 'u.username', $this->manager])
+            ->andFilterWhere(['like', 'm.username', $this->manager])
             ->andFilterWhere(['like', 'st.name', $this->status]);
 
         return $dataProvider;
