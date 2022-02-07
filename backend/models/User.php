@@ -29,6 +29,9 @@ class User extends \yii\db\ActiveRecord
 	const STATUS_DELETED = 0;
 	const STATUS_INACTIVE = 9;
 	const STATUS_ACTIVE = 10;
+	const ADMIN = 'admin';
+	const MANAGER = 'manager';
+	const USER = 'user';
 
 	public $password;
 	public $role;
@@ -156,10 +159,10 @@ class User extends \yii\db\ActiveRecord
 		if (!is_null($str)) $this->role = $str;
 		switch ($this->role)
 		{
-			case 'admin':
+			case self::ADMIN:
 				$this->role = 'Администратор';
 				return 'Администратор';
-			case 'manager':
+			case self::MANAGER:
 				$this->role = 'Менеджер';
 				return 'Менеджер';
 			default:
@@ -172,11 +175,11 @@ class User extends \yii\db\ActiveRecord
 	public function getAccess()
 	{
 		$roles = Yii::$app->authManager->getRolesByUser($this->id);
-		$access = 'user';
+		$access = self::USER;
 		if (isset($roles['admin']))
-			$access = 'admin';
+			$access = self::ADMIN;
 		if (isset($roles['manager']))
-			$access = 'manager';
+			$access = self::MANAGER;
 		return $access;
 	}
 
@@ -215,7 +218,7 @@ class User extends \yii\db\ActiveRecord
 
 	public function getAllAdminArray()
 	{
-		$admins = static::find()->leftJoin('auth_assignment ass', 'ass.user_id=user.id')->where(['item_name' => 'admin'])->all();
+		$admins = static::find()->leftJoin('auth_assignment ass', 'ass.user_id=user.id')->where(['item_name' => self::ADMIN])->all();
 		$result = ArrayHelper::map($admins, 'id', 'username');
 		return $result;
 	}

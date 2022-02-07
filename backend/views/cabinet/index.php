@@ -31,7 +31,7 @@ $this->title = 'Личный кабинет';
 		],
 	]) ?>
 
-    <div class="cabinet-index">
+    <!--<div class="cabinet">
         <div class="d-flex justify-content-center">
             <div class="col-xl col-md-12">
                 <h1><?= Html::encode($this->title) ?></h1>
@@ -65,5 +65,5 @@ $this->title = 'Личный кабинет';
                 </div>
             </div>
         </div>
-    </div>
+    </div>!-->
 </div>

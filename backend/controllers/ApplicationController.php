@@ -22,6 +22,7 @@ use yii\web\Response;
  */
 class ApplicationController extends Controller
 {
+
     /**
      * @inheritDoc
      */
@@ -103,17 +104,16 @@ class ApplicationController extends Controller
 
 		$model = $this->findModel($id);
 		if ($this->request->isPost) {
-			if($model->status_id == 1)
-			{
-				$this->actionWork($model);
-			}
-			elseif($model->status_id == 2)
-			{
-				$this->actionCompleted($model);
-			}
-			elseif($model->status_id == 3)
-			{
-				$this->actionClose($model);
+			switch ($model->status_id){
+				case Application::STATUS_NEW:
+					$this->actionWork($model);
+					break;
+				case Application::STATUS_WORK:
+					$this->actionCompleted($model);
+					break;
+				case Application::STATUS_COMPLETED:
+					$this->actionClose($model);
+					break;
 			}
 		}
         return $this->render('view', [
@@ -180,12 +180,8 @@ class ApplicationController extends Controller
     {
 
         $model = $this->findModel($id);
-		if(Yii::$app->user->can('admin')) {
-
-		} elseif(Yii::$app->user->can('user')) {
-			if($model->status_id == 4) {
-				return $this->redirect(['view', 'id' => $model->id, 'error' => 'Заявка уже закрыта, ее не возможно изменить']);
-			}
+		if(Yii::$app->user->can('user') and $model->status_id == Application::STATUS_CLOSED) {
+			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Заявка уже закрыта, ее не возможно изменить']);
 		} elseif(Yii::$app->user->can('manager')) {
 			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Вы не являетесь создателем данной заявки']);
 		}
@@ -261,45 +257,39 @@ class ApplicationController extends Controller
 				if(!is_null($org_id)) {
 					$org = Organization::findOne($org_id);
 					return ['output' => $org->getUsersArray(), 'selected' => ''];
-				} else {
-					return ['output'=>'', 'selected'=>''];
 				}
-			} else {
-				return ['output'=>'', 'selected'=>''];
 			}
 		}
+
 		return ['output'=>'', 'selected'=>''];
 
 	}
 
 	public function actionWork($model)
 	{
-		$app = $model;
-		$app->status_id = 2;
+		$model->status_id = Application::STATUS_WORK;
 		$log = new Log();
 		$log->load($this->request->post());
 		$log->createLog($model);
-		$app->save();
+		$model->save();
 	}
 
 	public function actionCompleted($model)
 	{
-		$app = $model;
-		$app->status_id = 3;
+		$model->status_id = Application::STATUS_COMPLETED;
 		$log = new Log();
 		$log->load($this->request->post());
 		$log->createLog($model);;
-		$app->save();
+		$model->save();
 	}
 
 	public function actionClose($model)
 	{
-		$app = $model;
-		$app->status_id = 4;
+		$model->status_id = Application::STATUS_CLOSED;
 		$log = new Log();
 		$log->load($this->request->post());
 		$log->createLog($model);
-		$app->save();
+		$model->save();
 	}
 
 	public function actionMessageCreate()
@@ -331,8 +321,6 @@ class ApplicationController extends Controller
 					'messages' => $messages,
 					'application' => $application,
 				]);
-			} else {
-				return ['success' => 'false'];
 			}
 		}
 		return ['success' => 'false'];

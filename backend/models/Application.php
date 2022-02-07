@@ -18,6 +18,12 @@ use yii\helpers\ArrayHelper;
  */
 class Application extends \yii\db\ActiveRecord
 {
+
+	const STATUS_NEW = 1;
+	const STATUS_WORK = 2;
+	const STATUS_COMPLETED = 3;
+	const STATUS_CLOSED = 4;
+
     /**
      * {@inheritdoc}
      */
@@ -114,13 +120,13 @@ class Application extends \yii\db\ActiveRecord
 	public function getColor($data)
 	{
 		switch ($data->status->id) {
-			case 1:
+			case self::STATUS_NEW:
 				return '<span class="badge badge-primary">' . $data->status->name . '</span>';
-			case 2:
+			case self::STATUS_WORK:
 				return '<span class="badge badge-info">' . $data->status->name . '</span>';
-			case 3:
+			case self::STATUS_COMPLETED:
 				return '<span class="badge badge-success">' . $data->status->name . '</span>';
-			case 4:
+			case self::STATUS_CLOSED:
 				return '<span class="badge badge-danger">' . $data->status->name . '</span>';
 			default:
 				return '<span class="badge badge-light">' . $data->status->name . '</span>';
