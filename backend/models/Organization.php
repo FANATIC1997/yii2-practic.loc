@@ -21,69 +21,68 @@ class Organization extends \yii\db\ActiveRecord
 
 	public $usersConnect;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'organization';
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function tableName()
+	{
+		return 'organization';
+	}
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['name', 'address', 'contact'], 'required'],
-            [['name', 'address', 'contact'], 'string', 'max' => 255],
-            [['name'], 'unique'],
-        ];
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function rules()
+	{
+		return [
+			[['name', 'address', 'contact'], 'required'],
+			[['name', 'address', 'contact'], 'string', 'max' => 255],
+			[['name'], 'unique'],
+		];
+	}
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'name' => 'Наименование',
-            'address' => 'Адрес',
-            'contact' => 'Контакты',
-        ];
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function attributeLabels()
+	{
+		return [
+			'id' => 'ID',
+			'name' => 'Наименование',
+			'address' => 'Адрес',
+			'contact' => 'Контакты',
+		];
+	}
 
-    /**
-     * Gets query for [[Application]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getApplications()
-    {
-        return $this->hasMany(Application::className(), ['organization_id' => 'id']);
-    }
+	/**
+	 * Gets query for [[Application]].
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getApplications()
+	{
+		return $this->hasMany(Application::className(), ['organization_id' => 'id']);
+	}
 
-    /**
-     * Gets query for [[Orgusers]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrgusers()
-    {
+	/**
+	 * Gets query for [[Orgusers]].
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getOrgusers()
+	{
 		return $this->hasMany(User::class, ['id' => 'userid'])
 			->viaTable('orguser', ['orgid' => 'id']);
-    }
+	}
 
 	public function getUserOrgsArray()
 	{
 		$org = $this->orgusers;
 
-		foreach ($org as $item)
-		{
+		foreach ($org as $item) {
 			$data[] = $item->id;
 		}
-		if(!empty($data))
+		if (!empty($data))
 			return $data;
 		else
 			return null;
@@ -92,11 +91,14 @@ class Organization extends \yii\db\ActiveRecord
 	public function getUsersOrg()
 	{
 		$arrayUsers = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
-		->joinWith('orgusers')->where(['orguser.orgid'=>$this->id])->andWhere(['ass.item_name'=>'user'])->asArray()->all();
+			->joinWith('orgusers')
+			->where(['orguser.orgid' => $this->id])
+			->andWhere(['!=', 'ass.item_name', User::ADMIN])
+			->asArray()->all();
 
 		$data = ArrayHelper::map($arrayUsers, 'id', 'username');
 
-		if(!empty($data))
+		if (!empty($data))
 			return $data;
 		else
 			return null;
@@ -105,8 +107,8 @@ class Organization extends \yii\db\ActiveRecord
 	public function getManagerArray()
 	{
 		$arrayManager = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
-			->joinWith('orgusers')->where(['ass.item_name'=>'manager'])
-			->andWhere(['orguser.orgid'=>$this->id])->asArray()->all();
+			->joinWith('orgusers')->where(['ass.item_name' => 'manager'])
+			->andWhere(['orguser.orgid' => $this->id])->asArray()->all();
 
 		$data = ArrayHelper::map($arrayManager, 'id', 'username');
 
@@ -114,7 +116,7 @@ class Organization extends \yii\db\ActiveRecord
 
 		$result = $data + $user->getAllAdminArray();
 
-		if(!empty($result))
+		if (!empty($result))
 			return $result;
 		else
 			return null;
@@ -122,7 +124,7 @@ class Organization extends \yii\db\ActiveRecord
 
 	public function getManagerOrganization($org_id)
 	{
-		return $this::find()->from('organization org')
+		$result = $this::find()->from('organization org')
 			->select(['ass.`user_id`, count(ap.`id`)'])
 			->joinWith('orgusers')
 			->leftJoin('auth_assignment ass', 'orguser.userid = ass.user_id')
@@ -131,13 +133,20 @@ class Organization extends \yii\db\ActiveRecord
 			->andWhere(['ass.item_name' => 'manager'])
 			->groupBy('ass.user_id')
 			->orderBy(['ass.user_id' => SORT_DESC])->asArray()->one()['user_id'];
+		if(is_null($result))
+		{
+			$user = new User();
+			$allAdmin = $user->getAllAdminArray();
+			$result = array_rand($allAdmin)['id'];
+		}
+		return $result;
 	}
 
 	public function getUsersArray()
 	{
 		$users = $this->orgusers;
 
-		if(!is_null($users)) {
+		if (!is_null($users)) {
 			foreach ($users as $item) {
 				$role = Roles::find()->where(['user_id' => $item->id])->one();
 				if ($role->item_name == 'manager' or $role->item_name == 'admin') {
@@ -146,7 +155,7 @@ class Organization extends \yii\db\ActiveRecord
 			}
 		}
 
-		if(!empty($data))
+		if (!empty($data))
 			return $data;
 		else
 			return '';
@@ -160,7 +169,7 @@ class Organization extends \yii\db\ActiveRecord
 
 	public function createConnectUserArray()
 	{
-		if(!empty($this->usersConnect)) {
+		if (!empty($this->usersConnect)) {
 			foreach ($this->usersConnect as $item) {
 				$user = User::findOne($item);
 				$this->link('orgusers', $user);
@@ -171,5 +180,11 @@ class Organization extends \yii\db\ActiveRecord
 	public function findByName($name)
 	{
 		return static::findOne(['name' => $name]);
+	}
+
+	public function getAllOrganization()
+	{
+		$orgs = static::find()->asArray()->all();
+		return ArrayHelper::map($orgs, 'id', 'name');
 	}
 }

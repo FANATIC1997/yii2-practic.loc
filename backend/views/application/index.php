@@ -12,9 +12,8 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Заявки';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="application-index">
+<div class="application-index m-auto w-75" style="padding-top: 5em;">
 
     <h1><?= Html::encode($this->title) ?></h1>
 	<? if (!empty($error)): ?>
@@ -28,14 +27,19 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
 	<?php Pjax::begin(); ?>
-	<?php  echo $this->render('_search', ['model' => $searchModel]); ?>
+	<?php  //echo $this->render('_search', ['model' => $searchModel]); ?>
 	<? if (Yii::$app->user->can('admin')): ?>
 		<?= GridView::widget([
 			'dataProvider' => $dataProvider,
+			'filterModel' => $searchModel,
 			'emptyText' => 'Заявки не найдены',
 			'summary' => false,
 			'headerRowOptions' => ['class' => 'bg-light'],
-			'tableOptions' => ['class' => 'table table-borderless text-center'],
+			'tableOptions' => ['class' => 'table table-borderless text-center table-application'],
+			'rowOptions' => function ($model, $key, $index, $grid)
+			{
+				return ['id' => $model['id'], 'onclick' => 'location.href="'.yii\helpers\Url::to(['view', 'id' => $model->id]).'"'];
+			},
 			'columns' => [
 				['class' => 'yii\grid\SerialColumn'],
 				'theme',
@@ -62,22 +66,21 @@ $this->params['breadcrumbs'][] = $this->title;
 					'value' => function ($data) {
 						return $data->organization->name;
 					}
-				],
-				[
-					'class' => ActionColumn::className(),
-					'urlCreator' => function ($action, Application $model, $key, $index, $column) {
-						return Url::toRoute([$action, 'id' => $model->id]);
-					}
-				],
+				]
 			],
 		]); ?>
 	<? else: ?>
 		<?= GridView::widget([
 			'dataProvider' => $dataProvider,
+			'filterModel' => $searchModel,
 			'emptyText' => 'Заявки не найдены',
 			'summary' => false,
 			'headerRowOptions' => ['class' => 'bg-light'],
-			'tableOptions' => ['class' => 'table table-borderless text-center'],
+			'tableOptions' => ['class' => 'table table-borderless text-center table-application'],
+			'rowOptions' => function ($model, $key, $index, $grid)
+			{
+				return ['id' => $model['id'], 'onclick' => 'location.href="'.Url::toRoute(['view', 'id' => $model->id]).'"'];
+			},
 			'columns' => [
 				['class' => 'yii\grid\SerialColumn'],
 				'theme',
@@ -98,13 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
 					'value' => function ($data) {
 						return $data->organization->name;
 					}
-				],
-				[
-					'class' => ActionColumn::className(),
-					'urlCreator' => function ($action, Application $model, $key, $index, $column) {
-						return Url::toRoute([$action, 'id' => $model->id]);
-					}
-				],
+				]
 			],
 		]); ?>
 	<? endif; ?>

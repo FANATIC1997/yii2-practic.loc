@@ -4,7 +4,6 @@
 /* @var $content string */
 
 use backend\assets\AppAsset;
-use yii\bootstrap4\Breadcrumbs;
 use yii\bootstrap4\Html;
 use yii\bootstrap4\Nav;
 use yii\bootstrap4\NavBar;
@@ -65,13 +64,7 @@ AppAsset::register($this);
 </header>
 
 <main role="main" class="flex-shrink-0">
-    <div class="container">
-        <? if($this->context->id != 'cabinet'): ?>
-        <?= Breadcrumbs::widget([
-                'homeLink' => ['label' => 'Dashboard', 'url' => '/'],
-            'links' => $this->params['breadcrumbs'] ?? [],
-        ]) ?>
-        <? endif; ?>
+    <div class="container-xxl">
         <?= $content ?>
     </div>
 </main>

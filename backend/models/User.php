@@ -219,8 +219,7 @@ class User extends \yii\db\ActiveRecord
 	public function getAllAdminArray()
 	{
 		$admins = static::find()->leftJoin('auth_assignment ass', 'ass.user_id=user.id')->where(['item_name' => self::ADMIN])->all();
-		$result = ArrayHelper::map($admins, 'id', 'username');
-		return $result;
+		return ArrayHelper::map($admins, 'id', 'username');
 	}
 
 	/**

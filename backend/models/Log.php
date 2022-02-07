@@ -5,6 +5,7 @@ namespace backend\models;
 use DateTime;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
 /**
@@ -114,16 +115,19 @@ class Log extends ActiveRecord
 
 	public function createLog($model)
 	{
-
+		$userId = Yii::$app->user->getId();
 		$this->status_id = $model->status_id;
-		$this->user_id = Yii::$app->user->getId();
+		$this->user_id = $userId;
 		$this->application_id = $model->id;
+
+		$action = explode('/', Yii::$app->controller->route)[1];
+		if($this->status_id == Application::STATUS_NEW and $action != 'update')
+		{
+			$this->comment = 'Создание заявки';
+		}
 
 		if (empty($this->comment)) {
 			$this->comment = 'Изменил: ';
-			if ($model->user_id != $model->getOldAttribute('user_id')) {
-				$this->old_user_id = $model->getOldAttribute('user_id');
-			}
 			if ($model->theme != $model->getOldAttribute('theme')) {
 				$this->comment .= 'тему';
 			}
@@ -132,6 +136,7 @@ class Log extends ActiveRecord
 			}
 			if ($model->user_id != $model->getOldAttribute('user_id')) {
 				$this->comment .= 'пользователя на ' . $model->user->username;
+				$this->old_user_id = $model->getOldAttribute('user_id');
 			}
 			if ($model->manager_id != $model->getOldAttribute('manager_id')) {
 				$this->comment .= 'менеджера на ' . $model->manager->username;
@@ -139,7 +144,7 @@ class Log extends ActiveRecord
 		}
 		if ($model->status_id != $model->getOldAttribute('status_id')) {
 			$this->comment .= ' Новый статус: ' . $model->status->name;
-			if(Yii::$app->user->getId() != $model->user_id) {
+			if($userId != $model->user_id) {
 				Yii::$app->mailer->compose()
 					->setFrom(Yii::$app->params['adminEmail'])
 					->setTo($model->user->email)
@@ -198,5 +203,13 @@ class Log extends ActiveRecord
 			return self::getStrTime($startDate, $endDate);
 		}
 		return null;
+	}
+
+	public function getLog($id)
+	{
+		$query = Log::find()->where(['application_id' => $id]);
+		return new ActiveDataProvider([
+			'query' => $query,
+		]);
 	}
 }

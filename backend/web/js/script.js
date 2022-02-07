@@ -26,18 +26,9 @@ $(document).on('click', 'body #button-submit', function () {
     return false; // отменяем отправку данных формы
 });
 
-$('body #message-message').keydown(function(e) {
+$(document).on('keydown', 'body #message-message', function(e) {
     if(e.keyCode === 13) {
         $('body #button-submit').click();
+        return false;
     }
-});
-
-$("#filter_drop").change(function(){
-    if($(this).val() === 0) $("#w0 input").attr('name', '');
-    let valueSelect = $(this).val()
-    $("#w0 input").attr('name', valueSelect);
-    let str = valueSelect.toLowerCase();
-    let column = str.split('[')[1].slice(0,-1);
-    let action = str.split('[')[0];
-    $("#w0 input").attr('id', action + '-' + column);
 });

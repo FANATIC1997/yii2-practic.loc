@@ -6,10 +6,8 @@ use yii\helpers\Html;
 /* @var $model backend\models\Application */
 
 $this->title = 'Создание заявки';
-$this->params['breadcrumbs'][] = ['label' => 'Заявки', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="application-create">
+<div class="application-create container" style="margin-top: 3.5em;">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

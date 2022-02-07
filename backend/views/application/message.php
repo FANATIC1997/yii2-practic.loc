@@ -9,12 +9,12 @@ use yii\bootstrap4\Html;
 
 ?>
 
-<div class="messages clearfix" style="font-size: 1.5em; overflow-y: auto; max-height: 500px;" id="messages-scroll">
-	<? $userId = Yii::$app->user->getId(); ?>
-	<? if (!empty($messages)): ?>
-		<? foreach ($messages as $key => $item): ?>
-			<? if ($item->user_id == $userId): ?>
-				<? if ($messages[$key - 1]->user_id == $item->user_id and $messages[$key - 1]->status_id == $item->status_id): ?>
+<div class="messages clearfix" style="font-size: 1.5em; overflow-y: auto; max-height: 500px; padding: 20px;" id="messages-scroll">
+	<?php $userId = Yii::$app->user->getId(); ?>
+	<?php if (!empty($messages)): ?>
+		<?php foreach ($messages as $key => $item): ?>
+			<?php if ($item->user_id == $userId): ?>
+				<?php if ($messages[$key - 1]->user_id == $item->user_id and $messages[$key - 1]->status_id == $item->status_id): ?>
                     <div class="item-message clearfix">
                         <div class="float-right">
                             <div class="badge badge-primary p-2 mb-1 text-wrap float-right text-left"
@@ -26,7 +26,7 @@ use yii\bootstrap4\Html;
                             </div>
                         </div>
                     </div>
-				<? else: ?>
+				<?php else: ?>
                     <div class="item-message clearfix">
                         <div class="float-right">
                             <small class="text-muted clearfix">
@@ -44,9 +44,9 @@ use yii\bootstrap4\Html;
                             </div>
                         </div>
                     </div>
-				<? endif; ?>
-			<? else: ?>
-				<? if ($messages[$key - 1]->user_id == $item->user_id and $messages[$key - 1]->status_id == $item->status_id): ?>
+				<?php endif; ?>
+			<?php else: ?>
+				<?php if ($messages[$key - 1]->user_id == $item->user_id and $messages[$key - 1]->status_id == $item->status_id): ?>
                     <div class="item-message clearfix">
                         <div class="float-left">
                             <div class="badge badge-primary p-2 mb-1">
@@ -57,7 +57,7 @@ use yii\bootstrap4\Html;
                             </div>
                         </div>
                     </div>
-				<? else: ?>
+				<?php else: ?>
                     <div class="item-message clearfix">
                         <div class="float-left">
                             <small class="text-muted">
@@ -73,21 +73,21 @@ use yii\bootstrap4\Html;
                             </div>
                         </div>
                     </div>
-				<? endif; ?>
-			<? endif; ?>
-		<? endforeach; ?>
+				<?php endif; ?>
+			<?php endif; ?>
+		<?php endforeach; ?>
 
-	<? else: ?>
+	<?php else: ?>
     <div class="alert alert-info" role="alert">
         Сообщения не найдены
     </div>
-	<? endif; ?>
+	<?php endif; ?>
 </div>
 
-<? if ($application->status_id < 4): ?>
-	<?php $form = ActiveForm::begin(['action' => 'message-create', 'id' => 'message-form', 'enableAjaxValidation' => false]); ?>
+<?php if ($application->status_id < 4): ?>
+	<?php $form = ActiveForm::begin(['action' => '/application/message-create', 'id' => 'message-form', 'enableAjaxValidation' => false]); ?>
     <div class="form-group d-none">
-		<?
+		<?php
 		$message->application_id = $application->id;
 		$message->user_id = Yii::$app->user->getId();
 		$message->status_id = $application->status_id;
@@ -105,4 +105,4 @@ use yii\bootstrap4\Html;
     </div>
 
 	<?php ActiveForm::end(); ?>
-<? endif; ?>
+<?php endif; ?>

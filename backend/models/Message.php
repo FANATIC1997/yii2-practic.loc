@@ -2,6 +2,7 @@
 
 namespace backend\models;
 
+
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -19,11 +20,9 @@ use yii\db\ActiveRecord;
  *
  * @property Application $application
  * @property Status $status
- * @property User $user
  */
 class Message extends ActiveRecord
 {
-
 	public function behaviors()
 	{
 		return [
@@ -31,17 +30,11 @@ class Message extends ActiveRecord
 		];
 	}
 
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'message';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -54,9 +47,6 @@ class Message extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -70,33 +60,44 @@ class Message extends ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Application]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getApplication()
     {
         return $this->hasOne(Application::className(), ['id' => 'application_id']);
     }
 
-    /**
-     * Gets query for [[Status]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getStatus()
     {
         return $this->hasOne(Status::className(), ['id' => 'status_id']);
     }
 
-    /**
-     * Gets query for [[User]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
+
+	public function getMessage($id)
+	{
+		return self::find()->where(['application_id' => $id])->orderBy('created_at')->all();
+	}
+
+	public function newMessage()
+	{
+
+		$application = Application::findOne($this->application_id);
+		if ($this->save()) {
+			$messages = $this->getMessage($application->id);
+
+			if (Yii::$app->user->getId() != $application->user_id) {
+				$user = User::findOne($application->user_id);
+				Yii::$app->mailer->compose()
+					->setFrom(Yii::$app->params['adminEmail'])
+					->setTo($user->email)
+					->setSubject('По вашему обращению')
+					->setTextBody('Вам прислали новое сообщение по вашему обращению')
+					->send();
+			}
+			return ['message' => new Message(), 'messages' => $messages, 'application' => $application];
+		}
+		return ['success' => 'false'];
+	}
 }

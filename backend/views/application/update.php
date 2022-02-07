@@ -6,11 +6,8 @@ use yii\helpers\Html;
 /* @var $model backend\models\Application */
 
 $this->title = 'Изменение заявки: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Заявки', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->theme, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Изменение';
 ?>
-<div class="application-update">
+<div class="application-update container" style="margin-top: 3.5em;">
 
     <h1>Заявка: <?= Html::encode($model->theme) ?></h1>
 

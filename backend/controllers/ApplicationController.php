@@ -7,234 +7,191 @@ use backend\models\ApplicationSearch;
 use backend\models\Log;
 use backend\models\Message;
 use backend\models\Organization;
-use backend\models\Status;
+use backend\models\Roles;
 use backend\models\User;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
 
-/**
- * ApplicationController implements the CRUD actions for Application model.
- */
 class ApplicationController extends Controller
 {
 
-    /**
-     * @inheritDoc
-     */
-    public function behaviors()
-    {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
-                ],
+	/**
+	 * @return array
+	 */
+	public function behaviors()
+	{
+		return array_merge(
+			parent::behaviors(),
+			[
+				'verbs' => [
+					'class' => VerbFilter::className(),
+					'actions' => [
+						'delete' => ['POST'],
+					],
+				],
 				'access' => [
 					'class' => AccessControl::className(),
 					'rules' => [
 						[
-							'actions' => ['work', 'completed'],
-							'allow' => true,
-							'roles' => ['admin', 'manager'],
-						],
-						[
-							'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-org', 'get-manager-ajax', 'get-manager-rnd', 'message-create'],
+							'actions' => ['index', 'view', 'create', 'update', 'get-org', 'get-manager-ajax', 'get-manager-rnd', 'message-create'],
 							'allow' => true,
 							'roles' => ['manager', 'user', 'admin']
 						],
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'get-org', 'get-manager-ajax', 'get-manager-rnd'],
+							'actions' => ['delete'],
 							'allow' => true,
-							'roles' => ['user']
+							'roles' => ['manager', 'admin']
 						],
-						[
-							'actions' => ['close'],
-							'allow' => true,
-							'roles' => ['user', 'admin']
-						]
 					],
 				],
-            ]
-        );
-    }
+			]
+		);
+	}
 
-    /**
-     * Lists all Application models.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        $searchModel = new ApplicationSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+	/**
+	 * Показ главной страницы
+	 * @return string
+	 */
+	public function actionIndex()
+	{
+		$searchModel = new ApplicationSearch();
+		$dataProvider = $searchModel->search($this->request->queryParams);
+		return $this->render('index', [
+			'searchModel' => $searchModel,
+			'dataProvider' => $dataProvider,
 			'error' => $this->request->get('error')
-        ]);
-    }
-
-    /**
-     * Displays a single Application model.
-     * @param int $id ID
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-		$log = new Log();
-
-		$message = new Message();
-		$messages = Message::find()->where(['application_id'=>$id])->orderBy('created_at')->all();
-
-		$query = Log::find()->where(['application_id' => $id]);
-		$dataProvider = new ActiveDataProvider([
-			'query' => $query,
 		]);
-		$logs = $dataProvider;
+	}
 
+
+	/**
+	 * Показ детальной страницы заявки а так же
+	 * принятие запроса на изменение статуса заявки
+	 * @param Application $id
+	 * @return string
+	 * @throws NotFoundHttpException
+	 */
+	public function actionView($id)
+	{
+		$log = new Log();
+		$message = new Message();
+		$messages = $message->getMessage($id);
+		$logs = $log->getLog($id);
 		$model = $this->findModel($id);
 		if ($this->request->isPost) {
-			switch ($model->status_id){
-				case Application::STATUS_NEW:
-					$this->actionWork($model);
-					break;
-				case Application::STATUS_WORK:
-					$this->actionCompleted($model);
-					break;
-				case Application::STATUS_COMPLETED:
-					$this->actionClose($model);
-					break;
+			if($this->request->post('back') !== null)
+			{
+				$model->setBackState($this->request->post());
+			}
+			elseif ($this->request->post('next') !== null)
+			{
+				$model->setNextState($this->request->post());
+			}
+			else
+			{
+				$model->setNextState($this->request->post());
 			}
 		}
-        return $this->render('view', [
-            'model' => $model,
+		return $this->render('view', [
+			'model' => $model,
 			'log' => $log,
 			'messages' => $messages,
 			'message' => $message,
 			'logs' => $logs,
 			'error' => $this->request->get('error')
-        ]);
-    }
+		]);
+	}
 
-    /**
-     * Creates a new Application model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
-    public function actionCreate()
-    {
-        $model = new Application();
+
+	/**
+	 * Создание новой заявки
+	 * @return string|Response
+	 */
+	public function actionCreate()
+	{
+		$model = new Application();
 		$log = new Log();
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
-                if(Yii::$app->user->can('user'))
-				{
-					if(!isset($model->user_id))
-					{
-						$model->user_id = Yii::$app->user->getId();
-					}
-					$organization = new Organization();
-					$model->manager_id = $organization->getManagerOrganization($model->organization_id);
-					$model->status_id = 1;
-				}
-				elseif(Yii::$app->user->can('manager'))
-				{
-					$model->user_id = Yii::$app->user->getId();
-					$model->manager_id = $model->user_id;
-					$model->status_id = 1;
-				}
-				if($model->save())
-				{
-					$log->comment = 'Создание заявки';
+		if ($this->request->isPost) {
+			if ($model->load($this->request->post())) {
+				$model->newApplication();
+				if ($model->save()) {
 					$log->createLog($model);
 					return $this->redirect(['view', 'id' => $model->id]);
 				}
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
+			}
+		}
+		return $this->render('create', [
+			'model' => $model,
+		]);
+	}
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Updates an existing Application model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id ID
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-
-        $model = $this->findModel($id);
-		if(Yii::$app->user->can('user') and $model->status_id == Application::STATUS_CLOSED) {
+	/**
+	 * Изменение данных о заявке
+	 * @param Application $id
+	 * @return string|Response
+	 * @throws NotFoundHttpException
+	 */
+	public function actionUpdate($id)
+	{
+		$role = new Roles();
+		$access = $role->getRole();
+		$model = $this->findModel($id);
+		if ($access['item_name'] == User::USER and $model->status_id == Application::STATUS_CLOSED) {
 			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Заявка уже закрыта, ее не возможно изменить']);
-		} elseif(Yii::$app->user->can('manager')) {
+		} elseif ($access['item_name'] == User::MANAGER and $access['user_id'] != $model->user_id) {
 			return $this->redirect(['view', 'id' => $model->id, 'error' => 'Вы не являетесь создателем данной заявки']);
 		}
-        if ($this->request->isPost && $model->load($this->request->post())) {
+		if ($this->request->isPost && $model->load($this->request->post())) {
 			$log = new Log();
 			$log->createLog($model);
-			if($model->save()) {
+			if ($model->save()) {
 				return $this->redirect(['view', 'id' => $model->id]);
 			} else {
 				return $this->render('update', [
 					'model' => $model,
 				]);
 			}
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Application model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $model = $this->findModel($id);
-
-		if(Yii::$app->user->can('admin'))
-		{
-			$model->delete();
 		}
-		elseif(Yii::$app->user->can('manager'))
-		{
-			if($model->user_id != Yii::$app->user->getId())
-			{
+		return $this->render('update', [
+			'model' => $model,
+		]);
+	}
+
+	/**
+	 * Удаление заявки
+	 * @param Application $id
+	 * @return Response
+	 * @throws NotFoundHttpException
+	 * @throws \yii\db\StaleObjectException
+	 */
+	public function actionDelete($id)
+	{
+		$model = $this->findModel($id);
+		$role = new Roles();
+		$access = $role->getRole();
+		if ($access['item_name'] == User::ADMIN) {
+			$model->delete();
+		} elseif ($access['item_name'] == User::MANAGER) {
+			if ($model->user_id != $access['user_id']) {
 				return $this->redirect(['index', 'error' => 'Вы не являетесь создателем данной заявки']);
 			}
-		}
-		elseif(Yii::$app->user->can('user'))
-		{
+		} elseif ($access['item_name'] == User::USER) {
 			return $this->redirect(['index', 'error' => 'Вы не можете удалять заявки']);
 		}
+		return $this->redirect(['index']);
+	}
 
-        return $this->redirect(['index']);
-    }
-
+	/**
+	 * @return array|string[]
+	 */
 	public function actionGetOrg()
 	{
-		Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+		Yii::$app->response->format = Response::FORMAT_JSON;
 		if (isset($_POST['depdrop_parents'])) {
 			$parents = $_POST['depdrop_parents'];
 			if ($parents != null) {
@@ -243,102 +200,56 @@ class ApplicationController extends Controller
 				return ['output' => $user->getOrgArray(), 'selected' => ''];
 			}
 		}
-		return ['output'=>'', 'selected'=>''];
+		return ['output' => '', 'selected' => ''];
 
 	}
 
+	/**
+	 * Получение менеджеров аяксом
+	 * @return array|string[]
+	 */
 	public function actionGetManagerAjax()
 	{
-		Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+		Yii::$app->response->format = Response::FORMAT_JSON;
 		if (isset($_POST['depdrop_parents'])) {
 			$parents = $_POST['depdrop_parents'];
 			if ($parents != null) {
-				$org_id = empty($parents[0]) ? null : $parents[0] ;
-				if(!is_null($org_id)) {
+				$org_id = empty($parents[0]) ? null : $parents[0];
+				if (!is_null($org_id)) {
 					$org = Organization::findOne($org_id);
 					return ['output' => $org->getUsersArray(), 'selected' => ''];
 				}
 			}
 		}
-
-		return ['output'=>'', 'selected'=>''];
-
+		return ['output' => '', 'selected' => ''];
 	}
 
-	public function actionWork($model)
-	{
-		$model->status_id = Application::STATUS_WORK;
-		$log = new Log();
-		$log->load($this->request->post());
-		$log->createLog($model);
-		$model->save();
-	}
-
-	public function actionCompleted($model)
-	{
-		$model->status_id = Application::STATUS_COMPLETED;
-		$log = new Log();
-		$log->load($this->request->post());
-		$log->createLog($model);;
-		$model->save();
-	}
-
-	public function actionClose($model)
-	{
-		$model->status_id = Application::STATUS_CLOSED;
-		$log = new Log();
-		$log->load($this->request->post());
-		$log->createLog($model);
-		$model->save();
-	}
-
+	/**
+	 * Создание нового сообщения аявксом
+	 * @return string
+	 */
 	public function actionMessageCreate()
 	{
 		$model = new Message();
-		$request = \Yii::$app->getRequest();
-		if ($request->isPost && $model->load($request->post())) {
+		if ($this->request->isPost && $model->load($this->request->post())) {
 			\Yii::$app->response->format = Response::FORMAT_JSON;
-			$message = new Message();
-			$application = Application::findOne($model->application_id);
-			if ($model->save()) {
-				$messages = Message::find()->where(['application_id'=> $model->application_id])->orderBy('created_at')->all();
-
-				$app = Application::findOne($model->application_id);
-
-				if(Yii::$app->user->getId() != $app->user_id)
-				{
-					$user = User::findOne($app->user_id);
-					$mail = Yii::$app->mailer->compose()
-						->setFrom(Yii::$app->params['adminEmail'])
-						->setTo($user->email)
-						->setSubject('По вашему обращению')
-						->setTextBody('Вам прислали новое сообщение по вашему обращению');
-					$mail->send();
-				}
-
-				return $this->renderAjax('message', [
-					'message' => $message,
-					'messages' => $messages,
-					'application' => $application,
-				]);
-			}
+			$result = $model->newMessage();
+			return $this->renderAjax('message', $result);
 		}
-		return ['success' => 'false'];
+		return false;
 	}
 
-    /**
-     * Finds the Application model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id ID
-     * @return Application the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Application::findOne(['id' => $id])) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
+	/**
+	 * Поиск модели
+	 * @param Application $id
+	 * @return Application|null
+	 * @throws NotFoundHttpException
+	 */
+	protected function findModel($id)
+	{
+		if (($model = Application::findOne(['id' => $id])) !== null) {
+			return $model;
+		}
+		throw new NotFoundHttpException('The requested page does not exist.');
+	}
 }

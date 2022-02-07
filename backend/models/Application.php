@@ -4,6 +4,7 @@ namespace backend\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\web\Request;
 
 /**
  * This is the model class for table "Application".
@@ -24,17 +25,13 @@ class Application extends \yii\db\ActiveRecord
 	const STATUS_COMPLETED = 3;
 	const STATUS_CLOSED = 4;
 
-    /**
-     * {@inheritdoc}
-     */
+
     public static function tableName()
     {
         return 'Application';
     }
 
-    /**
-     * {@inheritdoc}
-     */
+
     public function rules()
     {
         return [
@@ -48,9 +45,7 @@ class Application extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+
     public function attributeLabels()
     {
         return [
@@ -68,55 +63,77 @@ class Application extends \yii\db\ActiveRecord
         ];
     }
 
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
 	public function getStatus()
 	{
 		return $this->hasOne(Status::class, ['id' => 'status_id']);
 	}
 
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
 	public function getUser()
 	{
 		return $this->hasOne(User::class, ['id' => 'user_id']);
 	}
 
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
 	public function getManager()
 	{
 		return $this->hasOne(User::class, ['id' => 'manager_id']);
 	}
 
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
 	public function getOrganization()
 	{
 		return $this->hasOne(Organization::class, ['id' => 'organization_id']);
 	}
 
+	/**
+	 * @param $org_id
+	 * @return array|null
+	 */
 	public function getManagerArray($org_id)
 	{
 		$org = Organization::findOne($org_id);
 		return $org->getManagerArray();
 	}
 
-	public function getUsersOrg($org_id)
-	{
-		$org = Organization::findOne($org_id);
-		return $org->getUsersOrg();
-	}
-
+	/**
+	 * @return array
+	 */
 	public function getAllUsers()
 	{
 		return ArrayHelper::map(User::find()->asArray()->all(), 'id', 'username');
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getAllOrganization()
 	{
 		return ArrayHelper::map(Organization::find()->asArray()->all(), 'id', 'name');
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getAllStatus()
 	{
 		$stat = Status::find()->select(['id', 'name'])->all();
-		$status = ArrayHelper::map($stat, 'id', 'name');
-		return $status;
+		return ArrayHelper::map($stat, 'id', 'name');
 	}
 
+	/**
+	 * @param Application $data
+	 * @return string
+	 */
 	public function getColor($data)
 	{
 		switch ($data->status->id) {
@@ -131,5 +148,45 @@ class Application extends \yii\db\ActiveRecord
 			default:
 				return '<span class="badge badge-light">' . $data->status->name . '</span>';
 		}
+	}
+
+	/**
+	 * @param Request $query
+	 * @return void
+	 */
+	public function setNextState($query){
+		if($this->status_id < self::STATUS_CLOSED) {
+			$this->status_id++;
+			$log = new Log();
+			$log->load($query);
+			$log->createLog($this);
+			$this->save();
+		}
+	}
+
+	/**
+	 * @param Request $query
+	 * @return void
+	 */
+	public function setBackState($query){
+		if($this->status_id < self::STATUS_CLOSED) {
+			$this->status_id--;
+			$log = new Log();
+			$log->load($query);
+			$log->createLog($this);
+			$this->save();
+		}
+	}
+
+	public function newApplication()
+	{
+		$organization = new Organization();
+		$this->manager_id = $organization->getManagerOrganization($this->organization_id);
+		$userId = Yii::$app->user->getId();
+		if(!Yii::$app->user->can(User::ADMIN))
+		{
+			$this->user_id = $userId;
+		}
+		$this->status_id = Application::STATUS_NEW;
 	}
 }
