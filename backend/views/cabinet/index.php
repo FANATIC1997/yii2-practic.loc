@@ -8,30 +8,8 @@ use yii\widgets\DetailView;
 
 $this->title = 'Личный кабинет';
 ?>
-<div class="cabinet-index">
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-    </p>
-
-	<?= DetailView::widget([
-		'model' => $model,
-		'attributes' => [
-			'id',
-			'username',
-			[
-				'attribute' => 'phone',
-				'value' => function ($data) {
-					return '+7'.$data->phone;
-				}
-			],
-			'email:email',
-			'role'
-		],
-	]) ?>
-
-    <!--<div class="cabinet">
+<div class="cabinet-index m-auto w-50" style="padding-top: 5em;">
+    <div class="cabinet">
         <div class="d-flex justify-content-center">
             <div class="col-xl col-md-12">
                 <h1><?= Html::encode($this->title) ?></h1>
@@ -48,7 +26,13 @@ $this->title = 'Личный кабинет';
                         </div>
                         <div class="col-sm-8">
                             <div class="card-block">
-                                <h6 class="m-b-20 p-b-5 b-b-default f-w-600">Информация</h6>
+                                <h6 class="m-b-20 p-b-5 b-b-default f-w-600">
+                                    Информация
+
+                                    <div class="float-right clearfix" style="margin-top: -15px;">
+										<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                                    </div>
+                                </h6>
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <p class="m-b-10 f-w-600">Email</p>
@@ -65,5 +49,5 @@ $this->title = 'Личный кабинет';
                 </div>
             </div>
         </div>
-    </div>!-->
+    </div>
 </div>

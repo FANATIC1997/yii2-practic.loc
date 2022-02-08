@@ -93,8 +93,8 @@ class ApplicationSearch extends Application
 					'desc' => ['u.username' => SORT_DESC],
 				],
 				'manager' => [
-					'asc'  => ['u.username' => SORT_ASC],
-					'desc' => ['u.username' => SORT_DESC],
+					'asc'  => ['m.username' => SORT_ASC],
+					'desc' => ['m.username' => SORT_DESC],
 				],
 				'status' => [
 					'asc'  => ['status_id' => SORT_ASC],
@@ -102,12 +102,6 @@ class ApplicationSearch extends Application
 				],
 			],
 		]);
-
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'o.name' => $this->organization->name,
-            'u.username' => $this->user->username,
-        ]);
 
         $query->andFilterWhere(['like', 'theme', $this->theme])
             ->andFilterWhere(['like', 'o.name', $this->organization])

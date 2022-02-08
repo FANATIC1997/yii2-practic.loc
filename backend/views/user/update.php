@@ -1,18 +1,16 @@
 <?php
-use kartik\select2\Select2;
+
+use backend\models\Organization;
 use yii\bootstrap4\Html;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\User */
+/* @var $error backend\controllers\UserController */
+/* @var $orgs Organization */
 
 $this->title = 'Изменение пользователя: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Пользователи', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->username, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Изменение';
 ?>
-<div class="user-update">
-
-    <h1><?= Html::encode($model->username) ?></h1>
+<div class="user-update container" style="margin-top: 3.5em;">
 
     <? if(!is_null($error)): ?>
     <div class="alert alert-danger" role="alert">

@@ -1,13 +1,15 @@
 <?php
-use kartik\select2\Select2;
+
+use backend\controllers\CabinetController;
 use yii\bootstrap4\Html;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\User */
+/* @var $error CabinetController */
 
 $this->title = 'Изменение личных данных';
 ?>
-<div class="user-update">
+<div class="user-update container" style="margin-top: 3.5em;">
 
 	<h1><?= Html::encode($this->title) ?></h1>
 
