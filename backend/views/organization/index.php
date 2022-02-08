@@ -11,9 +11,8 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Организации';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="organization-index">
+<div class="organization-index m-auto w-75" style="padding-top: 5em;">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -29,18 +28,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
 		'emptyText' => 'Организации не найдены',
 		'summary' => false,
+		'headerRowOptions' => ['class' => 'bg-light'],
+		'tableOptions' => ['class' => 'table table-borderless text-center table-application'],
+		'rowOptions' => function ($model, $key, $index, $grid)
+		{
+			return ['id' => $model['id'], 'onclick' => 'location.href="'.yii\helpers\Url::to(['view', 'id' => $model->id]).'"'];
+		},
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'name',
             'address',
             'contact',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Organization $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
         ],
     ]); ?>
 

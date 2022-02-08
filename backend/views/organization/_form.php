@@ -1,5 +1,6 @@
 <?php
 
+use backend\models\User;
 use kartik\select2\Select2;
 use yii\bootstrap4\Html;
 use yii\bootstrap4\ActiveForm;
@@ -7,6 +8,7 @@ use yii\bootstrap4\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model backend\models\Organization */
 /* @var $form yii\bootstrap4\ActiveForm */
+/* @var $users User */
 ?>
 
 <div class="organization-form">

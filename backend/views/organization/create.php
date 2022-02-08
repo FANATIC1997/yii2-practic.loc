@@ -1,15 +1,15 @@
 <?php
 
+use backend\models\User;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Organization */
+/* @var $users User */
 
 $this->title = 'Добавление информации об организации';
-$this->params['breadcrumbs'][] = ['label' => 'Организации', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="organization-create">
+<div class="organization-create container" style="margin-top: 3.5em;">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

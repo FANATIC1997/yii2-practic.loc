@@ -64,6 +64,7 @@ class Application extends \yii\db\ActiveRecord
     }
 
 	/**
+	 * Связь с таблицей Статусы
 	 * @return \yii\db\ActiveQuery
 	 */
 	public function getStatus()
@@ -72,6 +73,7 @@ class Application extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * Связь с таблицей юзеры
 	 * @return \yii\db\ActiveQuery
 	 */
 	public function getUser()
@@ -80,6 +82,7 @@ class Application extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * Связь с таблицей юзеры
 	 * @return \yii\db\ActiveQuery
 	 */
 	public function getManager()
@@ -88,6 +91,7 @@ class Application extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * Связь с таблицей организации
 	 * @return \yii\db\ActiveQuery
 	 */
 	public function getOrganization()
@@ -151,6 +155,7 @@ class Application extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * Переделать
 	 * @param Request $query
 	 * @return void
 	 */
@@ -165,6 +170,7 @@ class Application extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * Переделать
 	 * @param Request $query
 	 * @return void
 	 */
@@ -178,6 +184,10 @@ class Application extends \yii\db\ActiveRecord
 		}
 	}
 
+	/**
+	 * Применение данных для новой заявки
+	 * @return void
+	 */
 	public function newApplication()
 	{
 		$organization = new Organization();

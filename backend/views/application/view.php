@@ -57,7 +57,7 @@ $access = $role->getRole();
 									<?php endif; ?>
                                 </div>
                             </h6>
-                            <div class="row">
+                            <div class="row w-100">
                                 <div class="col-sm-6">
                                     <p class="m-b-10 f-w-600" style="font-size: 1.4em">Тема</p>
                                     <h6 class="text-muted f-w-400"><?= $model->theme ?></h6>

@@ -3,7 +3,8 @@
 namespace backend\models;
 
 use Yii;
-use yii\base\NotSupportedException;
+
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -24,7 +25,7 @@ use yii\helpers\ArrayHelper;
  * @property Application[] $application
  * @property Orguser[] $orgusers
  */
-class User extends \yii\db\ActiveRecord
+class User extends ActiveRecord
 {
 	const STATUS_DELETED = 0;
 	const STATUS_INACTIVE = 9;
@@ -92,7 +93,7 @@ class User extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Gets query for [[Application]].
+	 * Свзяь с таблицей [[Application]].
 	 *
 	 * @return \yii\db\ActiveQuery
 	 */
@@ -102,7 +103,7 @@ class User extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Gets query for [[Orgusers]].
+	 * Связь с таблицей [[Orgusers]].
 	 *
 	 * @return \yii\db\ActiveQuery
 	 */
@@ -112,6 +113,11 @@ class User extends \yii\db\ActiveRecord
 			->viaTable('orguser', ['userid' => 'id']);
 	}
 
+	/**
+	 * Получение массива организаций связанных
+	 * с пользователем в третьем виде
+	 * @return array|null
+	 */
 	public function getOrgUsersArray()
 	{
 		$org = $this->orgusers;
@@ -126,6 +132,11 @@ class User extends \yii\db\ActiveRecord
 			return null;
 	}
 
+	/**
+	 * Получение массива организаций связанных
+	 * с пользователем но в другом виде
+	 * @return array
+	 */
 	public function getOrgArray()
 	{
 		$org = $this->orgusers;
@@ -140,6 +151,11 @@ class User extends \yii\db\ActiveRecord
 		return $data;
 	}
 
+	/**
+	 * Получение массива организаций связанных
+	 * с пользователем
+	 * @return array
+	 */
 	public function getOrgDropList()
 	{
 		$org = $this->orgusers;
@@ -154,6 +170,18 @@ class User extends \yii\db\ActiveRecord
 		return $data;
 	}
 
+	public function getAllUsers()
+	{
+		$user = self::find()->asArray()->all();
+		return ArrayHelper::map($user, 'id', 'username');
+	}
+
+	/**
+	 * Получение роли пользователя в человеко
+	 * читабельном виде
+	 * @param $str
+	 * @return string
+	 */
 	public function setRoleStr($str = null)
 	{
 		if (!is_null($str)) $this->role = $str;
@@ -172,6 +200,10 @@ class User extends \yii\db\ActiveRecord
 
 	}
 
+	/**
+	 * Получение роли пользователя
+	 * @return string
+	 */
 	public function getAccess()
 	{
 		$roles = Yii::$app->authManager->getRolesByUser($this->id);
@@ -183,6 +215,11 @@ class User extends \yii\db\ActiveRecord
 		return $access;
 	}
 
+	/**
+	 * Присвоение роли пользователю при регистрации
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function createRoleConnect()
 	{
 		$auth = Yii::$app->authManager;
@@ -191,6 +228,10 @@ class User extends \yii\db\ActiveRecord
 		return true;
 	}
 
+	/**
+	 * Создание новых связей User|Organization
+	 * @return void
+	 */
 	public function createConnectOrgArray()
 	{
 		if (!empty($this->orgTags))
@@ -203,6 +244,10 @@ class User extends \yii\db\ActiveRecord
 		}
 	}
 
+	/**
+	 * Проверка на валидацию телефона
+	 * @return void
+	 */
 	public function validatePhone()
 	{
 		$phone = mb_substr(trim($this->phone), 2);
@@ -210,12 +255,20 @@ class User extends \yii\db\ActiveRecord
 		$this->phone = (int) $phone;
 	}
 
+	/**
+	 * Уаление всех связей User|Organization
+	 * @return void
+	 */
 	public function deleteAllConnectOrg()
 	{
 		$this->unlinkAll('orgusers', true);
 		$this->createConnectOrgArray();
 	}
 
+	/**
+	 * Получение всех администраторов
+	 * @return array
+	 */
 	public function getAllAdminArray()
 	{
 		$admins = static::find()->leftJoin('auth_assignment ass', 'ass.user_id=user.id')->where(['item_name' => self::ADMIN])->all();
@@ -223,24 +276,7 @@ class User extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public static function findIdentity($id)
-	{
-		return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 * @throws NotSupportedException
-	 */
-	public static function findIdentityByAccessToken($token, $type = null)
-	{
-		throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
-	}
-
-	/**
-	 * Finds user by username
+	 * Поиск пользователя по username
 	 *
 	 * @param string $username
 	 * @return static|null
@@ -250,63 +286,18 @@ class User extends \yii\db\ActiveRecord
 		return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
 	}
 
+	/**
+	 * Поиск пользователя по email
+	 * @param $email
+	 * @return User|null
+	 */
 	public static function findByEmail($email)
 	{
 		return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
 	}
 
 	/**
-	 * Finds user by password reset token
-	 *
-	 * @param string $token password reset token
-	 * @return static|null
-	 */
-	public static function findByPasswordResetToken($token)
-	{
-		if (!static::isPasswordResetTokenValid($token))
-		{
-			return null;
-		}
-
-		return static::findOne([
-			'password_reset_token' => $token,
-			'status' => self::STATUS_ACTIVE,
-		]);
-	}
-
-	/**
-	 * Finds user by verification email token
-	 *
-	 * @param string $token verify email token
-	 * @return static|null
-	 */
-	public static function findByVerificationToken($token)
-	{
-		return static::findOne([
-			'verification_token' => $token,
-			'status' => self::STATUS_INACTIVE
-		]);
-	}
-
-	/**
-	 * Finds out if password reset token is valid
-	 *
-	 * @param string $token password reset token
-	 * @return bool
-	 */
-	public static function isPasswordResetTokenValid($token)
-	{
-		if (empty($token))
-		{
-			return false;
-		}
-
-		$timestamp = (int)substr($token, strrpos($token, '_') + 1);
-		$expire = Yii::$app->params['user.passwordResetTokenExpire'];
-		return $timestamp + $expire >= time();
-	}
-
-	/**
+	 * Получение ID пользователя
 	 * {@inheritdoc}
 	 */
 	public function getId()
@@ -315,23 +306,7 @@ class User extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public function getAuthKey()
-	{
-		return $this->auth_key;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function validateAuthKey($authKey)
-	{
-		return $this->getAuthKey() === $authKey;
-	}
-
-	/**
-	 * Validates password
+	 * Проверка на валидацию пароля
 	 *
 	 * @param string $password password to validate
 	 * @return bool if password provided is valid for current user
@@ -342,45 +317,13 @@ class User extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Generates password hash from password and sets it to the model
+	 * Генерация хеша нового пароля
 	 *
 	 * @param string $password
 	 */
 	public function setPassword($password)
 	{
 		$this->password_hash = Yii::$app->security->generatePasswordHash($password);
-	}
-
-	/**
-	 * Generates "remember me" authentication key
-	 */
-	public function generateAuthKey()
-	{
-		$this->auth_key = Yii::$app->security->generateRandomString();
-	}
-
-	/**
-	 * Generates new password reset token
-	 */
-	public function generatePasswordResetToken()
-	{
-		$this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-	}
-
-	/**
-	 * Generates new token for email verification
-	 */
-	public function generateEmailVerificationToken()
-	{
-		$this->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
-	}
-
-	/**
-	 * Removes password reset token
-	 */
-	public function removePasswordResetToken()
-	{
-		$this->password_reset_token = null;
 	}
 
 }

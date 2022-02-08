@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -16,7 +17,7 @@ use yii\helpers\ArrayHelper;
  * @property Application[] $application
  * @property Orguser[] $orgusers
  */
-class Organization extends \yii\db\ActiveRecord
+class Organization extends ActiveRecord
 {
 
 	public $usersConnect;
@@ -55,7 +56,7 @@ class Organization extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Gets query for [[Application]].
+	 * Связь с таблицей [[Application]].
 	 *
 	 * @return \yii\db\ActiveQuery
 	 */
@@ -65,7 +66,7 @@ class Organization extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Gets query for [[Orgusers]].
+	 * Связь с таблицей [[Orgusers]].
 	 *
 	 * @return \yii\db\ActiveQuery
 	 */
@@ -88,22 +89,10 @@ class Organization extends \yii\db\ActiveRecord
 			return null;
 	}
 
-	public function getUsersOrg()
-	{
-		$arrayUsers = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
-			->joinWith('orgusers')
-			->where(['orguser.orgid' => $this->id])
-			->andWhere(['!=', 'ass.item_name', User::ADMIN])
-			->asArray()->all();
-
-		$data = ArrayHelper::map($arrayUsers, 'id', 'username');
-
-		if (!empty($data))
-			return $data;
-		else
-			return null;
-	}
-
+	/**
+	 * Получение списка менеджеров
+	 * @return array|null
+	 */
 	public function getManagerArray()
 	{
 		$arrayManager = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
@@ -122,6 +111,12 @@ class Organization extends \yii\db\ActiveRecord
 			return null;
 	}
 
+	/**
+	 * Получение менеджеоа с наименьшим количеством
+	 * заявок, если их нет то администратора
+	 * @param $org_id
+	 * @return mixed
+	 */
 	public function getManagerOrganization($org_id)
 	{
 		$result = $this::find()->from('organization org')
@@ -142,18 +137,19 @@ class Organization extends \yii\db\ActiveRecord
 		return $result;
 	}
 
+	/**
+	 * Получение всех привязанных пользователей
+	 * @return array|string
+	 */
 	public function getUsersArray()
 	{
-		$users = $this->orgusers;
+		$users = Roles::find()->from('user u')
+			->joinWith('orgusers')
+			->leftJoin('auth_assignment ass', 'orguser.userid = ass.user_id')
+			->where(['!=', 'ass.item_name', User::USER])
+			->andWhere(['orgusers.orgid'=> $this->id])->asArray()->all();
 
-		if (!is_null($users)) {
-			foreach ($users as $item) {
-				$role = Roles::find()->where(['user_id' => $item->id])->one();
-				if ($role->item_name == 'manager' or $role->item_name == 'admin') {
-					$data[] = ['id' => $item->id, 'name' => $item->username];
-				}
-			}
-		}
+		$data = ArrayHelper::map($users, 'id', 'username');
 
 		if (!empty($data))
 			return $data;
@@ -161,12 +157,20 @@ class Organization extends \yii\db\ActiveRecord
 			return '';
 	}
 
+	/**
+	 * Удаление связей User|Organization
+	 * @return void
+	 */
 	public function deleteAllConnectUsers()
 	{
 		$this->unlinkAll('orgusers', true);
 		$this->createConnectUserArray();
 	}
 
+	/**
+	 * Создание связей User|Organization
+	 * @return void
+	 */
 	public function createConnectUserArray()
 	{
 		if (!empty($this->usersConnect)) {
@@ -177,11 +181,20 @@ class Organization extends \yii\db\ActiveRecord
 		}
 	}
 
+	/**
+	 * Поиск организации по наименованию
+	 * @param $name
+	 * @return Organization|null
+	 */
 	public function findByName($name)
 	{
 		return static::findOne(['name' => $name]);
 	}
 
+	/**
+	 * Получение всех организаций ввиде массива
+	 * @return array
+	 */
 	public function getAllOrganization()
 	{
 		$orgs = static::find()->asArray()->all();
