@@ -154,34 +154,21 @@ class Application extends \yii\db\ActiveRecord
 		}
 	}
 
-	/**
-	 * Переделать
-	 * @param Request $query
-	 * @return void
-	 */
-	public function setNextState($query){
-		if($this->status_id < self::STATUS_CLOSED) {
-			$this->status_id++;
-			$log = new Log();
-			$log->load($query);
-			$log->createLog($this);
-			$this->save();
-		}
-	}
 
-	/**
-	 * Переделать
-	 * @param Request $query
-	 * @return void
-	 */
-	public function setBackState($query){
-		if($this->status_id < self::STATUS_CLOSED) {
-			$this->status_id--;
-			$log = new Log();
-			$log->load($query);
-			$log->createLog($this);
-			$this->save();
+	public function setState($query)
+	{
+		if($query['back'] !== null)
+		{
+			$this->status_id = self::STATUS_WORK;
 		}
+		elseif ($query['next'] !== null)
+		{
+			$this->status_id++;
+		}
+		$log = new Log();
+		$log->load($query);
+		$log->createLog($this);
+		$this->save();
 	}
 
 	/**

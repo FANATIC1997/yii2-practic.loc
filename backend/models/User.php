@@ -4,6 +4,7 @@ namespace backend\models;
 
 use Yii;
 
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
@@ -44,6 +45,16 @@ class User extends ActiveRecord
 	public static function tableName()
 	{
 		return 'user';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function behaviors()
+	{
+		return [
+			TimestampBehavior::className(),
+		];
 	}
 
 	/**

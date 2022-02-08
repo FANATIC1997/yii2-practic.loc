@@ -37,7 +37,7 @@ class ApplicationController extends Controller
 					'class' => AccessControl::className(),
 					'rules' => [
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'get-org', 'get-manager-ajax', 'get-manager-rnd', 'message-create'],
+							'actions' => ['index', 'view', 'create', 'update', 'get-org', 'get-manager-ajax', 'get-manager-rnd', 'message-create', 'message-update'],
 							'allow' => true,
 							'roles' => ['manager', 'user', 'admin']
 						],
@@ -82,20 +82,10 @@ class ApplicationController extends Controller
 		$message = new Message();
 		$messages = $message->getMessage($id);
 		$logs = $log->getLog($id);
+		$logsUser = $log->getLogUser($id);
 		$model = $this->findModel($id);
 		if ($this->request->isPost) {
-			if($this->request->post('back') !== null)
-			{
-				$model->setBackState($this->request->post());
-			}
-			elseif ($this->request->post('next') !== null)
-			{
-				$model->setNextState($this->request->post());
-			}
-			else
-			{
-				$model->setNextState($this->request->post());
-			}
+			$model->setState($this->request->post());
 		}
 		return $this->render('view', [
 			'model' => $model,
@@ -103,6 +93,7 @@ class ApplicationController extends Controller
 			'messages' => $messages,
 			'message' => $message,
 			'logs' => $logs,
+			'logsUser' => $logsUser,
 			'error' => $this->request->get('error')
 		]);
 	}
@@ -240,6 +231,26 @@ class ApplicationController extends Controller
 	}
 
 	/**
+	 * Создание нового сообщения аявксом
+	 * @return string
+	 */
+	public function actionMessageUpdate()
+	{
+		if ($this->request->isPost) {
+			if(isset($this->request->post()['Message']['id'])) {
+				$idMessage = $this->request->post()['Message']['id'];
+				$model = $this->findMessage($idMessage);
+				if ($model->load($this->request->post())) {
+					\Yii::$app->response->format = Response::FORMAT_JSON;
+					$result = $model->updateMessage();
+					return $this->renderAjax('message', $result);
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Поиск модели
 	 * @param Application $id
 	 * @return Application|null
@@ -248,6 +259,20 @@ class ApplicationController extends Controller
 	protected function findModel($id)
 	{
 		if (($model = Application::findOne(['id' => $id])) !== null) {
+			return $model;
+		}
+		throw new NotFoundHttpException('The requested page does not exist.');
+	}
+
+	/**
+	 * Поиск модели
+	 * @param Message $id
+	 * @return Message|null
+	 * @throws NotFoundHttpException
+	 */
+	protected function findMessage($id)
+	{
+		if (($model = Message::findOne(['id' => $id])) !== null) {
 			return $model;
 		}
 		throw new NotFoundHttpException('The requested page does not exist.');

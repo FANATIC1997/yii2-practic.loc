@@ -17,8 +17,8 @@ class m220203_060538_create_message_table extends Migration
             'application_id' => $this->integer()->notNull(),
             'user_id' => $this->integer()->notNull(),
             'status_id' => $this->integer()->notNull(),
-            'created_at' => $this->integer()->notNull(),
-            'updated_at' => $this->integer()->notNull(),
+            'create_time' => $this->timestamp()->notNull(),
+            'update_time' => $this->timestamp()->notNull(),
             'message' => $this->string(),
         ]);
 

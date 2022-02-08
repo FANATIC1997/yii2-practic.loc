@@ -89,6 +89,22 @@ class Organization extends ActiveRecord
 			return null;
 	}
 
+	public function getUsersOrg()
+	{
+		$arrayUsers = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
+			->joinWith('orgusers')
+			->where(['orguser.orgid' => $this->id])
+			->andWhere(['!=', 'ass.item_name', User::ADMIN])
+			->asArray()->all();
+
+		$data = ArrayHelper::map($arrayUsers, 'id', 'username');
+
+		if (!empty($data))
+			return $data;
+		else
+			return null;
+	}
+
 	/**
 	 * Получение списка менеджеров
 	 * @return array|null

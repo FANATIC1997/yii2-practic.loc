@@ -16,10 +16,11 @@ class m220202_071106_create_logs_application_table extends Migration
             'id' => $this->primaryKey(),
             'application_id' => $this->integer()->notNull(),
             'status_id' => $this->integer()->notNull(),
-            'user_id' => $this->integer()->notNull()->defaultValue(null),
-            'old_user_id' => $this->integer()->Null(),
-            'created_at' => $this->integer()->notNull(),
-            'update_at' => $this->integer()->notNull(),
+            'user_id' => $this->integer()->notNull(),
+            'old_user_id' => $this->integer()->Null()->defaultValue(null),
+            'old_manager_id' => $this->integer()->Null()->defaultValue(null),
+            'create_time' => $this->timestamp()->notNull(),
+            'update_time' => $this->timestamp()->notNull(),
             'comment' => $this->string()->notNull(),
         ]);
 

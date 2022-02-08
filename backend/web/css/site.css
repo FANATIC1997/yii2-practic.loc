@@ -95,7 +95,12 @@ a.desc:after {
 }
 
 .user-card-full {
-    overflow: hidden
+    overflow: hidden;
+    padding: 15px;
+    border-radius: 25px;
+    -webkit-box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
+    box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
 }
 
 .m-r-0 {
@@ -202,16 +207,6 @@ h6 {
     margin-top: 20px
 }
 
-.user-card-full .social-link li {
-    display: inline-block
-}
-
-.user-card-full .social-link li a {
-    font-size: 20px;
-    margin: 0 10px 0 0;
-    -webkit-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out
-}
 
 .search {
     top: 6px;
@@ -234,10 +229,46 @@ h6 {
     transition-duration: 0.8s;
 }
 
-.message-block{
+.message-block, .log-user, .history{
     padding: 15px;
     border-radius: 25px;
     -webkit-box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
     -moz-box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
     box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
+}
+
+.message-block{
+    max-height: 613px;
+}
+
+.message-block .item{
+    font-size: 1em;
+}
+
+.message-block .item .status{
+    font-size: 0.8em;
+}
+
+.message-block .item .message{
+    font-size: 0.8em;
+}
+
+.message-block .item .message-time{
+    font-size: 0.7em;
+    opacity: 0.5;
+}
+
+.message-block .item .message-time a{
+    color: black;
+    opacity: 0.5;
+}
+
+.item-time{
+    color: #adadad;
+    font-size: 14px;
+}
+
+.edit{
+    font-size: 0.7em;
+    opacity: 0.5;
 }

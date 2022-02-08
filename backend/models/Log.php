@@ -2,11 +2,13 @@
 
 namespace backend\models;
 
+use Cassandra\Date;
 use DateTime;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "logs_application".
@@ -17,8 +19,9 @@ use yii\db\ActiveRecord;
  * @property int $user_id
  * @property int $status_id
  * @property int $old_user_id
- * @property int $created_at
- * @property int $updated_at
+ * @property int $old_manager_id
+ * @property TimestampBehavior $create_time
+ * @property TimestampBehavior $update_time
  */
 class Log extends ActiveRecord
 {
@@ -32,7 +35,12 @@ class Log extends ActiveRecord
 	public function behaviors()
 	{
 		return [
-			TimestampBehavior::class,
+			[
+				'class' => TimestampBehavior::class,
+				'createdAtAttribute' => 'create_time',
+				'updatedAtAttribute' => 'update_time',
+				'value' => new Expression('NOW()'),
+			],
 		];
 	}
 
@@ -51,6 +59,7 @@ class Log extends ActiveRecord
 			[['comment'], 'string', 'max' => 255],
 			[['comment'], 'trim'],
 			[['old_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['old_user_id' => 'id']],
+			[['old_manager_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['old_manager_id' => 'id']],
 			[['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::className(), 'targetAttribute' => ['status_id' => 'id']],
 			[['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
 			[['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::className(), 'targetAttribute' => ['application_id' => 'id']],
@@ -67,9 +76,10 @@ class Log extends ActiveRecord
 			'status_id' => 'Статус',
 			'user_id' => 'Кто',
 			'old_user_id' => 'Старый пользователь',
+			'old_manager_id' => 'Старый менеджер',
 			'application_id' => 'Заявка',
-			'created_at' => 'Когда',
-			'updated_at' => 'Время обновления',
+			'create_time' => 'Когда',
+			'update_time' => 'Время обновления',
 		];
 	}
 
@@ -113,6 +123,16 @@ class Log extends ActiveRecord
 		return $this->hasOne(User::class, ['id' => 'old_user_id']);
 	}
 
+	/**
+	 * Gets query for [[User]].
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getOldManager()
+	{
+		return $this->hasOne(User::class, ['id' => 'old_manager_id']);
+	}
+
 	public function createLog($model)
 	{
 		$userId = Yii::$app->user->getId();
@@ -140,6 +160,7 @@ class Log extends ActiveRecord
 			}
 			if ($model->manager_id != $model->getOldAttribute('manager_id')) {
 				$this->comment .= 'менеджера на ' . $model->manager->username;
+				$this->old_manager_id = $model->getOldAttribute('manager_id');
 			}
 		}
 		if ($model->status_id != $model->getOldAttribute('status_id')) {
@@ -159,29 +180,18 @@ class Log extends ActiveRecord
 
 	private function getStrTime($startDate, $endDate)
 	{
-		$diff = $startDate - $endDate;
 
-		$second = $diff;
+		$interval = $startDate->diff($endDate);
 
-		$years = floor($diff / self::YEAR_SEC);
 
-		$month = floor($diff / self::MONTH_SEC);
-
-		$days = floor($diff / self::DAY_SEC);
-
-		$hours = floor($diff / self::HOUR_SEC);
-
-		$minutes = floor($diff / self::MINUTE_SEC);
 
 		$str = '<br><span class="badge badge-warning" data-toggle="tooltip" data-placement="top" title="Время реагирования">';
-
-		$str .= ($years != 0) ? $years . ' л ' : '';
-		$str .= ($month != 0) ? $month - ($years * 12) . ' м ' : '';
-		$str .= ($days != 0) ? $days - ($month * 30) . ' дн ' : '';
-		$str .= ($hours != 0) ? $hours - ($days * 24) . ' ч ' : '';
-		$str .= ($minutes != 0) ? $minutes - ($hours * 60) . ' мин ' : '';
-		$str .= ($second != 0) ? $second - ($minutes * 60) . 'с ' : '';
-
+		$str .= ($interval->y != 0) ? $interval->y.' л ' : '';
+		$str .= ($interval->m != 0) ? $interval->m.' м ' : '';
+		$str .= ($interval->d != 0) ? $interval->d.' дн ' : '';
+		$str .= ($interval->h != 0) ? $interval->h.' ч ' : '';
+		$str .= ($interval->i != 0) ? $interval->i.' мин ' : '';
+		$str .= ($interval->s != 0) ? $interval->s.'с' : '';
 
 		$str .= '</span>';
 
@@ -197,8 +207,8 @@ class Log extends ActiveRecord
 			$log = static::find()->where(['application_id' => $data->application_id])
 				->andWhere(['status_id' => $data->status_id - 1])->one();
 
-			$startDate = $data->created_at;
-			$endDate = $log->created_at;
+			$startDate = new DateTime($data->create_time);
+			$endDate = new DateTime($log->create_time);
 
 			return self::getStrTime($startDate, $endDate);
 		}
@@ -207,9 +217,21 @@ class Log extends ActiveRecord
 
 	public function getLog($id)
 	{
-		$query = Log::find()->where(['application_id' => $id]);
+		$query = Log::find()->where(['application_id' => $id])
+			->andWhere(['old_user_id' => null])
+			->andWhere(['old_manager_id' => null]);
 		return new ActiveDataProvider([
 			'query' => $query,
 		]);
+	}
+
+	public function getLogUser($id)
+	{
+		return Log::find()->where(['application_id' => $id])
+			->with('oldUser')
+			->with('oldManager')
+			->andWhere(['!=', 'old_user_id', ' '])
+			->orWhere(['!=' ,'old_manager_id', ' '])
+			->orderBy('create_time')->all();
 	}
 }
