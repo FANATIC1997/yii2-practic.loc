@@ -69,3 +69,14 @@ $(document).on('keydown', 'body #message-message', function (e) {
 $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
 });
+
+
+$(document).on('click', '#link', function () {
+
+    $('.modal').modal('show');
+    return false;
+})
+
+$('body').on('show.bs.modal', '.modal', function () {
+    alert('lala');
+});

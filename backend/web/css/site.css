@@ -229,12 +229,16 @@ h6 {
     transition-duration: 0.8s;
 }
 
-.message-block, .log-user, .history{
+.log-user, .tabs{
     padding: 15px;
     border-radius: 25px;
     -webkit-box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
     -moz-box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
     box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);
+}
+
+.tabs{
+
 }
 
 .message-block{

@@ -108,10 +108,8 @@ $this->title = 'Заявки';
 					'content' => function ($data) {
 						return Html::a('Тык', ['comment', 'id' => $data->id], [
 							'title' => 'Тык',
+                            'id' => 'link',
 							'data' => [
-								'target' => '#myModal',
-								'toggle' => 'modal',
-								'backdrop' => 'static',
                                 'id' => $data->id
 							]
 						]);
@@ -123,6 +121,7 @@ $this->title = 'Заявки';
 	<?php Pjax::end(); ?>
 
 	<?php Modal::begin(['title'=>'My modal data', 'id'=>'myModal'])?>
+
 	<?php Modal::end()?>
 
 

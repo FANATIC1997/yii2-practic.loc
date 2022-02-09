@@ -30,7 +30,7 @@ $access = $role->getRole();
 	<?php endif; ?>
 
     <div class="row mb-4">
-        <div class="col mb-4">
+        <div class="col mb-4 mr-3">
             <div class="row ml-1 mb-3">
                 <div class="d-flex justify-content-center">
                     <div class="col-xl col-md-12 p-0">
@@ -126,7 +126,7 @@ $access = $role->getRole();
 			<? endif; ?>
         </div>
 
-        <div class="col">
+        <div class="col tabs mr-3 ml-3">
             <ul class="nav nav-pills mb-2 ml-1" id="pills-tab" role="tablist">
                 <li class="nav-item">
 					<?= Html::a('История', '#pills-history', [
