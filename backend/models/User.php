@@ -6,6 +6,7 @@ use Yii;
 
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -53,7 +54,10 @@ class User extends ActiveRecord
 	public function behaviors()
 	{
 		return [
-			TimestampBehavior::className(),
+			[
+				'class' => TimestampBehavior::class,
+				'value' => new Expression('NOW()'),
+			],
 		];
 	}
 
@@ -335,6 +339,22 @@ class User extends ActiveRecord
 	public function setPassword($password)
 	{
 		$this->password_hash = Yii::$app->security->generatePasswordHash($password);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function validateAuthKey($authKey)
+	{
+		return $this->getAuthKey() === $authKey;
+	}
+
+	/**
+	 * Generates "remember me" authentication key
+	 */
+	public function generateAuthKey()
+	{
+		$this->auth_key = Yii::$app->security->generateRandomString();
 	}
 
 }

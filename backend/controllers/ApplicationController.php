@@ -61,10 +61,12 @@ class ApplicationController extends Controller
 	{
 		$searchModel = new ApplicationSearch();
 		$dataProvider = $searchModel->search($this->request->queryParams);
+		$log = new Log();
 		return $this->render('index', [
 			'searchModel' => $searchModel,
 			'dataProvider' => $dataProvider,
-			'error' => $this->request->get('error')
+			'error' => $this->request->get('error'),
+			'log' => $log
 		]);
 	}
 

@@ -1,6 +1,8 @@
 <?php
 
 use backend\models\Application;
+use backend\models\Log;
+use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Modal;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -9,6 +11,7 @@ use yii\grid\GridView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
+/* @var $log  Log */
 /* @var $searchModel backend\models\ApplicationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
@@ -17,28 +20,29 @@ $this->title = 'Заявки';
 ?>
 <div class="application-index m-auto w-75" style="padding-top: 5em;">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+	<h1><?=Html::encode($this->title)?></h1>
 	<?php if (!empty($error)): ?>
-        <div class="alert alert-danger" role="alert">
-			<?= $error ?>
-        </div>
+		<div class="alert alert-danger" role="alert">
+			<?=$error?>
+		</div>
 	<?php endif; ?>
 
-    <p>
-		<?= Html::a('Создать заявку', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+	<p>
+		<?=Html::a('Создать заявку', ['create'], ['class' => 'btn btn-success'])?>
+	</p>
 
 	<?php Pjax::begin(); ?>
 	<?php //echo $this->render('_search', ['model' => $searchModel]); ?>
 	<?php if (Yii::$app->user->can('admin')): ?>
-		<?= GridView::widget([
+		<?=GridView::widget([
 			'dataProvider' => $dataProvider,
 			'filterModel' => $searchModel,
 			'emptyText' => 'Заявки не найдены',
 			'summary' => false,
 			'headerRowOptions' => ['class' => 'bg-light'],
 			'tableOptions' => ['class' => 'table table-borderless text-center table-application'],
-			'rowOptions' => function ($model, $key, $index, $grid) {
+			'rowOptions' => function ($model, $key, $index, $grid)
+			{
 				return ['id' => $model['id'], 'onclick' => 'location.href="' . yii\helpers\Url::to(['view', 'id' => $model->id]) . '"'];
 			},
 			'columns' => [
@@ -46,39 +50,44 @@ $this->title = 'Заявки';
 				'theme',
 				[
 					'attribute' => 'status',
-					'content' => function ($data) {
+					'content' => function ($data)
+					{
 						return $data->getColor($data);
 					}
 				],
 				[
 					'attribute' => 'user',
-					'content' => function ($data) {
+					'content' => function ($data)
+					{
 						return '<img src="https://i.imgur.com/VKOeFyS.png" width="25"> ' . $data->user->username;
 					}
 				],
 				[
 					'attribute' => 'manager',
-					'content' => function ($data) {
+					'content' => function ($data)
+					{
 						return '<img src="https://i.imgur.com/VKOeFyS.png" width="25"> ' . $data->manager->username;
 					}
 				],
 				[
 					'attribute' => 'organization',
-					'value' => function ($data) {
+					'value' => function ($data)
+					{
 						return $data->organization->name;
 					}
 				]
 			],
-		]); ?>
+		]);?>
 	<?php else: ?>
-		<?= GridView::widget([
+		<?=GridView::widget([
 			'dataProvider' => $dataProvider,
 			'filterModel' => $searchModel,
 			'emptyText' => 'Заявки не найдены',
 			'summary' => false,
 			'headerRowOptions' => ['class' => 'bg-light'],
 			'tableOptions' => ['class' => 'table table-borderless text-center table-application'],
-			'rowOptions' => function ($model, $key, $index, $grid) {
+			'rowOptions' => function ($model, $key, $index, $grid)
+			{
 				return ['data-id' => $model->id];
 			},
 			'columns' => [
@@ -86,43 +95,57 @@ $this->title = 'Заявки';
 				'theme',
 				[
 					'attribute' => 'status',
-					'content' => function ($data) {
+					'content' => function ($data)
+					{
 						return $data->getColor($data);
 					}
 				],
 				[
 					'attribute' => 'manager',
-					'content' => function ($data) {
+					'content' => function ($data)
+					{
 						return '<img src="https://i.imgur.com/VKOeFyS.png" width="25"> ' . $data->manager->username;
 					}
 				],
 				[
 					'attribute' => 'organization',
-					'value' => function ($data) {
+					'value' => function ($data)
+					{
 						return $data->organization->name;
 					}
 				],
 				[
 					'class' => 'yii\grid\DataColumn',
 					'attribute' => '',
-					'content' => function ($data) {
+					'content' => function ($data)
+					{
 						return Html::a('Тык', ['comment', 'id' => $data->id], [
 							'title' => 'Тык',
-                            'id' => 'link',
+							'id' => 'link',
 							'data' => [
-                                'id' => $data->id
+								'id' => $data->id,
+								'status' => $data->status_id
 							]
 						]);
 					}
 				],
 			],
-		]); ?>
+		]);?>
 	<?php endif; ?>
 	<?php Pjax::end(); ?>
 
-	<?php Modal::begin(['title'=>'My modal data', 'id'=>'myModal'])?>
+	<?php Modal::begin(['title' => 'My modal data', 'id' => 'myModal']) ?>
+		<?php $form = ActiveForm::begin(['action' => 'application/view']); ?>
+			<div class="form-group">
+				<?=$form->field($log, 'comment')->textInput(['maxlength' => true])?>
+			</div>
 
-	<?php Modal::end()?>
+			<div class="form-group">
+				<?=Html::submitButton('Дальше', ['class' => 'btn btn-success', 'name' => 'next', 'id' => 'next'])?>
+				<?=Html::submitButton('Назад', ['class' => 'btn btn-primary', 'name' => 'back', 'id' => 'back'])?>
+			</div>
+		<?php ActiveForm::end(); ?>
+	<?php Modal::end() ?>
 
 
 	<?php

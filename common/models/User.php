@@ -6,6 +6,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 use yii\web\IdentityInterface;
 
 /**
@@ -43,9 +44,12 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function behaviors()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+	    return [
+		    [
+			    'class' => TimestampBehavior::class,
+			    'value' => new Expression('NOW()'),
+		    ],
+	    ];
     }
 
     /**

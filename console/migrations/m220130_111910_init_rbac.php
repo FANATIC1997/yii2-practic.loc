@@ -42,8 +42,35 @@ class m220130_111910_init_rbac extends Migration
 	    $admin = $auth->createRole('admin');
 	    $auth->add($admin);
 
-	    $auth->addChild($admin, $user);
-	    $auth->addChild($admin, $manager);
+	    $authorRole = $auth->getRole('admin');
+	    $auth->assign($authorRole, 1);
+
+	    $authorRole = $auth->getRole('user');
+	    $auth->assign($authorRole, 2);
+
+	    $authorRole = $auth->getRole('user');
+	    $auth->assign($authorRole, 3);
+
+	    $authorRole = $auth->getRole('user');
+	    $auth->assign($authorRole, 4);
+
+	    $authorRole = $auth->getRole('user');
+	    $auth->assign($authorRole, 5);
+
+	    $authorRole = $auth->getRole('manager');
+	    $auth->assign($authorRole, 6);
+
+	    $authorRole = $auth->getRole('manager');
+	    $auth->assign($authorRole, 7);
+
+	    $authorRole = $auth->getRole('manager');
+	    $auth->assign($authorRole, 8);
+
+	    $authorRole = $auth->getRole('manager');
+	    $auth->assign($authorRole, 9);
+
+	    $authorRole = $auth->getRole('manager');
+	    $auth->assign($authorRole, 10);
     }
 
     public function down()

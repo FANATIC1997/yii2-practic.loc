@@ -96,6 +96,9 @@ a.desc:after {
 
 .user-card-full {
     overflow: hidden;
+}
+
+.application-view .user-card-full{
     padding: 15px;
     border-radius: 25px;
     -webkit-box-shadow: 4px 4px 22px 0px rgba(34, 60, 80, 0.2);

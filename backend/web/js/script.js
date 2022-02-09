@@ -78,5 +78,5 @@ $(document).on('click', '#link', function () {
 })
 
 $('body').on('show.bs.modal', '.modal', function () {
-    alert('lala');
+
 });

@@ -165,6 +165,10 @@ class Application extends \yii\db\ActiveRecord
 		{
 			$this->status_id++;
 		}
+		else
+		{
+			$this->status_id++;
+		}
 		$log = new Log();
 		$log->load($query);
 		$log->createLog($this);
