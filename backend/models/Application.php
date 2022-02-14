@@ -172,7 +172,7 @@ class Application extends \yii\db\ActiveRecord
 		$log = new Log();
 		$log->load($query);
 		$log->createLog($this);
-		$this->save();
+		return $this->save();
 	}
 
 	/**

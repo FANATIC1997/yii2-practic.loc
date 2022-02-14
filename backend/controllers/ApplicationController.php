@@ -37,7 +37,18 @@ class ApplicationController extends Controller
 					'class' => AccessControl::className(),
 					'rules' => [
 						[
-							'actions' => ['index', 'view', 'create', 'update', 'get-org', 'get-manager-ajax', 'get-manager-rnd', 'message-create', 'message-update'],
+							'actions' => [
+								'index',
+								'view',
+								'create',
+								'update',
+								'get-org',
+								'get-manager-ajax',
+								'get-manager-rnd',
+								'message-create',
+								'message-update',
+								'set-state',
+							],
 							'allow' => true,
 							'roles' => ['manager', 'user', 'admin']
 						],
@@ -100,6 +111,18 @@ class ApplicationController extends Controller
 		]);
 	}
 
+	public function actionSetState($id)
+	{
+		$model = $this->findModel($id);
+		if ($this->request->isPost) {
+			\Yii::$app->response->format = Response::FORMAT_JSON;
+			if($model->setState($this->request->post()))
+			{
+				return ['id' => $id, 'html' => $model->getColor($model)];
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Создание новой заявки

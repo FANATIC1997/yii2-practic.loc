@@ -2,6 +2,7 @@
 
 use backend\models\Application;
 use backend\models\Log;
+use backend\models\Roles;
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Modal;
 use yii\helpers\Html;
@@ -16,7 +17,8 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Заявки';
-
+$role = new Roles();
+$access = $role->getRole();
 ?>
 <div class="application-index m-auto w-75" style="padding-top: 5em;">
 
@@ -117,14 +119,17 @@ $this->title = 'Заявки';
 				[
 					'class' => 'yii\grid\DataColumn',
 					'attribute' => '',
-					'content' => function ($data)
+					'content' => function ($data) use ($access)
 					{
 						return Html::a('Тык', ['comment', 'id' => $data->id], [
 							'title' => 'Тык',
-							'id' => 'link',
+							'id' => 'link-modal',
 							'data' => [
 								'id' => $data->id,
-								'status' => $data->status_id
+								'status' => $data->status_id,
+								'user-now' => $access['user_id'],
+								'user-access' => $access['item_name'],
+								'user' => $data->user_id,
 							]
 						]);
 					}
@@ -135,14 +140,14 @@ $this->title = 'Заявки';
 	<?php Pjax::end(); ?>
 
 	<?php Modal::begin(['title' => 'My modal data', 'id' => 'myModal']) ?>
-		<?php $form = ActiveForm::begin(['action' => 'application/view']); ?>
+		<?php $form = ActiveForm::begin(['action' => 'application/set-state?id=', 'method' => 'POST']); ?>
 			<div class="form-group">
 				<?=$form->field($log, 'comment')->textInput(['maxlength' => true])?>
 			</div>
 
 			<div class="form-group">
 				<?=Html::submitButton('Дальше', ['class' => 'btn btn-success', 'name' => 'next', 'id' => 'next'])?>
-				<?=Html::submitButton('Назад', ['class' => 'btn btn-primary', 'name' => 'back', 'id' => 'back'])?>
+				<?=Html::submitButton('Вернуть в работу', ['class' => 'btn btn-primary', 'name' => 'back', 'id' => 'back'])?>
 			</div>
 		<?php ActiveForm::end(); ?>
 	<?php Modal::end() ?>
