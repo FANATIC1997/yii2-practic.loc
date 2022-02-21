@@ -31,9 +31,9 @@ class CabinetController extends Controller
 	}
 
 	/**
-	 * Lists all Application models.
-	 *
+	 * Показ главной страницы со всеми записями
 	 * @return string
+	 * @throws NotFoundHttpException
 	 */
 	public function actionIndex()
 	{
@@ -44,6 +44,12 @@ class CabinetController extends Controller
 		]);
 	}
 
+	/**
+	 * Изменение личных данных пользователя
+	 * @param $id
+	 * @return string|\yii\web\Response
+	 * @throws NotFoundHttpException
+	 */
 	public function actionUpdate($id)
 	{
 		$model = $this->findModelEdit($id);
@@ -64,6 +70,9 @@ class CabinetController extends Controller
 	}
 
 	/**
+	 * Поиск модели для изменения
+	 * @param $id
+	 * @return EditUserRuls|null
 	 * @throws NotFoundHttpException
 	 */
 	protected function findModelEdit($id)
@@ -77,8 +86,7 @@ class CabinetController extends Controller
 	}
 
 	/**
-	 * Finds the Application model based on its primary key value.
-	 * If the model is not found, a 404 HTTP exception will be thrown.
+	 * Поиск модели
 	 * @param int $id ID
 	 * @return User the loaded model
 	 * @throws NotFoundHttpException if the model cannot be found

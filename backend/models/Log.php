@@ -133,6 +133,11 @@ class Log extends ActiveRecord
 		return $this->hasOne(User::class, ['id' => 'old_manager_id']);
 	}
 
+	/**
+	 * Создание нового лога
+	 * @param $model
+	 * @return void
+	 */
 	public function createLog($model)
 	{
 		$userId = Yii::$app->user->getId();
@@ -164,6 +169,15 @@ class Log extends ActiveRecord
 			}
 		}
 		if ($model->status_id != $model->getOldAttribute('status_id')) {
+			if(!empty($this->comment) and $this->comment != 'Создание заявки')
+			{
+				$message = new Message();
+				$message->application_id = $this->application_id;
+				$message->user_id = $userId;
+				$message->status_id = $this->status_id;
+				$message->message = $this->comment;
+				$message->save();
+			}
 			$this->comment .= ' Новый статус: ' . $model->status->name;
 			if($userId != $model->user_id) {
 				Yii::$app->mailer->compose()
@@ -178,6 +192,12 @@ class Log extends ActiveRecord
 		$this->comment = null;
 	}
 
+	/**
+	 * Получение строки со временем реакции
+	 * @param $startDate
+	 * @param $endDate
+	 * @return string
+	 */
 	private function getStrTime($startDate, $endDate)
 	{
 
@@ -198,7 +218,11 @@ class Log extends ActiveRecord
 		return $str;
 	}
 
+
 	/**
+	 * Получение предыдущего статуса
+	 * @param $data
+	 * @return string|null
 	 * @throws \Exception
 	 */
 	public function getBackStatus($data)
@@ -215,6 +239,11 @@ class Log extends ActiveRecord
 		return null;
 	}
 
+	/**
+	 * Листинг лога
+	 * @param $id
+	 * @return ActiveDataProvider
+	 */
 	public function getLog($id)
 	{
 		$query = Log::find()->where(['application_id' => $id])
@@ -225,6 +254,11 @@ class Log extends ActiveRecord
 		]);
 	}
 
+	/**
+	 * Листинг лога по юзеру
+	 * @param $id
+	 * @return array|ActiveRecord[]
+	 */
 	public function getLogUser($id)
 	{
 		return Log::find()->where(['application_id' => $id])

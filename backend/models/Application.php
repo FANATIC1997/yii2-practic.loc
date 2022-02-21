@@ -2,7 +2,9 @@
 
 namespace backend\models;
 
+use common\models\Dashboard;
 use Yii;
+use yii\bootstrap4\Html;
 use yii\helpers\ArrayHelper;
 use yii\web\Request;
 
@@ -154,7 +156,11 @@ class Application extends \yii\db\ActiveRecord
 		}
 	}
 
-
+	/**
+	 * Изменение статуса заявки
+	 * @param $query
+	 * @return bool
+	 */
 	public function setState($query)
 	{
 		if($query['back'] !== null)
@@ -189,5 +195,46 @@ class Application extends \yii\db\ActiveRecord
 			$this->user_id = $userId;
 		}
 		$this->status_id = Application::STATUS_NEW;
+	}
+
+	/**
+	 * Получение массива с данными анализа
+	 * @return array
+	 */
+	public function getAnalysis()
+	{
+		$result = [];
+
+		$dashboard = new Dashboard();
+		$applications = $dashboard->getCountApplication();
+
+		$result['data'][] = [
+			'name' => 'Новые',
+			'y' => $applications['applicationsNew']/$applications['allapplications'] * 100,
+			'count' => $applications['applicationsNew'],
+			'link' => Html::a('Новые', ['application/index', 'ApplicationSearch' => ['status' => 'Новая']])
+		];
+		$result['data'][] = [
+			'name' => 'В работе',
+			'y' => $applications['applicationsWork']/$applications['allapplications'] * 100,
+			'count' => $applications['applicationsWork'],
+			'link' => Html::a('В работе', ['application/index', 'ApplicationSearch' => ['status' => 'В работе']])
+		];
+		$result['data'][] = [
+			'name' => 'Выполненые',
+			'y' => $applications['applicationsComplete']/$applications['allapplications'] * 100,
+			'count' => $applications['applicationsComplete'],
+			'link' => Html::a('Готовые', ['application/index', 'ApplicationSearch' => ['status' => 'Готово']])
+		];
+		$result['data'][] = [
+			'name' => 'Закрытые',
+			'y' => $applications['applicationsClosed']/$applications['allapplications'] * 100,
+			'count' => $applications['applicationsClosed'],
+			'link' => Html::a('Закрытые', ['application/index', 'ApplicationSearch' => ['status' => 'Закрыто']])
+		];
+
+		$result['all'] = $applications['allapplications'];
+
+		return $result;
 	}
 }

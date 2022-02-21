@@ -2,8 +2,10 @@
 
 namespace backend\controllers;
 
+use backend\models\Application;
 use backend\models\Roles;
 use backend\models\SignupForm;
+use backend\models\User;
 use common\models\Dashboard;
 use common\models\LoginForm;
 use Yii;
@@ -31,10 +33,15 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'get-analysis-application'],
                         'allow' => true,
                         'roles' => ['admin', 'manager', 'user'],
                     ],
+					[
+						'actions' => ['get-max', 'get-stat-users'],
+						'allow' => true,
+						'roles' => ['admin']
+					]
                 ],
             ],
             'verbs' => [
@@ -58,36 +65,28 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
-    public function actionIndex()
+
+	/**
+	 * Показ главной страницы
+	 * @return string
+	 */
+	public function actionIndex()
     {
-		$arrayCountUsers = [];
-		if(Yii::$app->user->can('admin')) {
-			$arrayCountUsers['allusers'] = Roles::find()->count();
-			$arrayCountUsers['admins'] = Roles::find()->where(['item_name' => 'admin'])->count();
-			$arrayCountUsers['managers'] = Roles::find()->where(['item_name' => 'manager'])->count();
-			$arrayCountUsers['users'] = Roles::find()->where(['item_name' => 'user'])->count();
-		}
 
 		$dashboard = new Dashboard();
 
         return $this->render('index', [
-			'users' => $arrayCountUsers,
 			'application' => $dashboard->getCountApplication(),
 			'countOrgs' => $dashboard->getCountOrg(),
 		]);
     }
 
-    /**
-     * Login action.
-     *
-     * @return string|Response
-     */
-    public function actionLogin()
+
+	/**
+	 * Авторизация
+	 * @return string|Response
+	 */
+	public function actionLogin()
     {
 		if (!Yii::$app->user->isGuest)
 			return $this->goHome();
@@ -108,8 +107,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Logout action.
-     *
+     * Выход из системы
      * @return Response
      */
     public function actionLogout()
@@ -120,7 +118,7 @@ class SiteController extends Controller
     }
 
 	/**
-	 * Signs user up.
+	 * Регистрация пользователя
 	 *
 	 * @return mixed
 	 */
@@ -139,5 +137,38 @@ class SiteController extends Controller
 		return $this->render('signup', [
 			'model' => $model,
 		]);
+	}
+
+	/**
+	 * Получения массива с наибольшим числом выполненых заявок
+	 * @return array
+	 */
+	public function actionGetMax()
+	{
+		Yii::$app->response->format = Response::FORMAT_JSON;
+		$user = new User();
+		return $user->getMaxWork();
+	}
+
+	/**
+	 * Получение массива с анализом заявок
+	 * @return array
+	 */
+	public function actionGetAnalysisApplication()
+	{
+		Yii::$app->response->format = Response::FORMAT_JSON;
+		$applications = new Application();
+		return $applications->getAnalysis();
+	}
+
+	/**
+	 * Получения массива с статистикой пользователей
+	 * @return array
+	 */
+	public function actionGetStatUsers()
+	{
+		Yii::$app->response->format = Response::FORMAT_JSON;
+		$user = new User();
+		return $user->getStatUsers();
 	}
 }

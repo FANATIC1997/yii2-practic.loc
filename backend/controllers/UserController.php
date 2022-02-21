@@ -8,10 +8,12 @@ use backend\models\Roles;
 use backend\models\User;
 use backend\models\UserSearch;
 use Yii;
+use yii\db\StaleObjectException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -47,7 +49,7 @@ class UserController extends Controller
 	}
 
 	/**
-	 * Lists all User models.
+	 * Показ всех пользователей
 	 *
 	 * @return string
 	 */
@@ -61,11 +63,12 @@ class UserController extends Controller
 		]);
 	}
 
+
 	/**
-	 * Displays a single User model.
-	 * @param int $id ID
+	 * Показ одного пользователя
+	 * @param $id
 	 * @return string
-	 * @throws NotFoundHttpException if the model cannot be found
+	 * @throws NotFoundHttpException
 	 */
 	public function actionView($id)
 	{
@@ -77,9 +80,10 @@ class UserController extends Controller
 	}
 
 	/**
-	 * Creates a new User model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
-	 * @return string|\yii\web\Response
+	 * Создание нового пользователя, при успешном выполнении
+	 * переход на просмотр его информации
+	 * @return string|Response
+	 * @throws \Exception
 	 */
 	public function actionCreate()
 	{
@@ -117,10 +121,10 @@ class UserController extends Controller
 	}
 
 	/**
-	 * Updates an existing User model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * Изменение информации о пользователе, при успешном
+	 * выполнении переход на просмотр
 	 * @param int $id ID
-	 * @return string|\yii\web\Response
+	 * @return string|Response
 	 * @throws NotFoundHttpException if the model cannot be found
 	 */
 	public function actionUpdate($id)
@@ -151,11 +155,11 @@ class UserController extends Controller
 	}
 
 	/**
-	 * Deletes an existing User model.
-	 * If deletion is successful, the browser will be redirected to the 'index' page.
+	 * Удаление информации о пользователе, при успешном
+	 * выполнении переход на листинг
 	 * @param int $id ID
-	 * @return \yii\web\Response
-	 * @throws NotFoundHttpException if the model cannot be found
+	 * @return Response
+	 * @throws NotFoundHttpException|StaleObjectException if the model cannot be found
 	 */
 	public function actionDelete($id)
 	{
@@ -170,8 +174,7 @@ class UserController extends Controller
 	}
 
 	/**
-	 * Finds the User model based on its primary key value.
-	 * If the model is not found, a 404 HTTP exception will be thrown.
+	 * Поиск модели
 	 * @param int $id ID
 	 * @return User the loaded model
 	 * @throws NotFoundHttpException if the model cannot be found
@@ -187,6 +190,7 @@ class UserController extends Controller
 	}
 
 	/**
+	 * Поиск модели для изменения
 	 * @throws NotFoundHttpException
 	 */
 	protected function findModelEdit($id)

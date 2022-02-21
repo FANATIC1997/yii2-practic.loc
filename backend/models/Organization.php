@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
@@ -58,7 +59,7 @@ class Organization extends ActiveRecord
 	/**
 	 * Связь с таблицей [[Application]].
 	 *
-	 * @return \yii\db\ActiveQuery
+	 * @return ActiveQuery
 	 */
 	public function getApplications()
 	{
@@ -68,7 +69,7 @@ class Organization extends ActiveRecord
 	/**
 	 * Связь с таблицей [[Orgusers]].
 	 *
-	 * @return \yii\db\ActiveQuery
+	 * @return ActiveQuery
 	 */
 	public function getOrgusers()
 	{
@@ -76,6 +77,10 @@ class Organization extends ActiveRecord
 			->viaTable('orguser', ['orgid' => 'id']);
 	}
 
+	/**
+	 * Получение массива пользователей с организациями
+	 * @return array|null
+	 */
 	public function getUserOrgsArray()
 	{
 		$org = $this->orgusers;
@@ -89,6 +94,11 @@ class Organization extends ActiveRecord
 			return null;
 	}
 
+	/**
+	 * Получение массива пользователей с организациями
+	 * в другом виде
+	 * @return array|null
+	 */
 	public function getUsersOrg()
 	{
 		$arrayUsers = User::find()->leftJoin('auth_assignment ass', 'user.id=ass.user_id')

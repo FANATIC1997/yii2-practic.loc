@@ -3,6 +3,7 @@
 use backend\models\Application;
 use backend\models\Log;
 use backend\models\Roles;
+use backend\models\User;
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Modal;
 use yii\helpers\Html;
@@ -88,10 +89,6 @@ $access = $role->getRole();
 			'summary' => false,
 			'headerRowOptions' => ['class' => 'bg-light'],
 			'tableOptions' => ['class' => 'table table-borderless text-center table-application'],
-			'rowOptions' => function ($model, $key, $index, $grid)
-			{
-				return ['data-id' => $model->id];
-			},
 			'columns' => [
 				['class' => 'yii\grid\SerialColumn'],
 				'theme',
@@ -121,17 +118,21 @@ $access = $role->getRole();
 					'attribute' => '',
 					'content' => function ($data) use ($access)
 					{
-						return Html::a('Тык', ['comment', 'id' => $data->id], [
-							'title' => 'Тык',
-							'id' => 'link-modal',
-							'data' => [
-								'id' => $data->id,
-								'status' => $data->status_id,
-								'user-now' => $access['user_id'],
-								'user-access' => $access['item_name'],
-								'user' => $data->user_id,
-							]
-						]);
+                        if($access['item_name'] == User::MANAGER or $access['item_name'] == User::ADMIN) {
+                            if($data->status_id < 3) {
+								return Html::a(Html::img('@web/image/save.svg', ['alt' => 'Тык']), ['comment', 'id' => $data->id], [
+									'title' => 'Тык',
+									'id' => 'link-modal',
+									'data' => [
+										'id' => $data->id,
+										'status' => $data->status_id,
+										'user-now' => $access['user_id'],
+										'user-access' => $access['item_name'],
+										'user' => $data->user_id,
+									]
+								]);
+							}
+						}
 					}
 				],
 			],
@@ -139,8 +140,8 @@ $access = $role->getRole();
 	<?php endif; ?>
 	<?php Pjax::end(); ?>
 
-	<?php Modal::begin(['title' => 'My modal data', 'id' => 'myModal']) ?>
-		<?php $form = ActiveForm::begin(['action' => 'application/set-state?id=', 'method' => 'POST']); ?>
+	<?php Modal::begin(['title' => 'Смена статуса заявки', 'id' => 'myModal']) ?>
+		<?php $form = ActiveForm::begin(['action' => 'application/set-state?id=', 'method' => 'POST', 'id' => 'modal-w1']); ?>
 			<div class="form-group">
 				<?=$form->field($log, 'comment')->textInput(['maxlength' => true])?>
 			</div>
@@ -156,7 +157,7 @@ $access = $role->getRole();
 	<?php
 	$this->registerJs("
         $('td').click(function (e) {
-            var id = $(this).closest('tr').data('id');
+            var id = $(this).closest('tr').data('key');
             if(e.target == this)
                 location.href = '" . Url::to(['view']) . "?id=' + id;
         });

@@ -357,4 +357,33 @@ class User extends ActiveRecord
 		$this->auth_key = Yii::$app->security->generateRandomString();
 	}
 
+	public function getMaxWork()
+	{
+		$users = User::find()->select(['username', 'COUNT(*)'])
+			->leftJoin('auth_assignment ass', 'user.id=ass.user_id')
+			->leftJoin('application ap', 'user.id=ap.manager_id')
+			->where(['ap.status_id' => Application::STATUS_CLOSED])
+			->andWhere(['ass.item_name' => User::MANAGER])
+			->groupBy('username')
+			->orderBy(['COUNT(*)' => 'DESC'])
+			->limit(10)->asArray()->all();
+		$result = [];
+		foreach ($users as $item)
+		{
+			$result[] = ['name' => $item['username'], 'y' => (integer)$item['COUNT(*)']];
+		}
+		return $result;
+	}
+
+	public function getStatUsers()
+	{
+		$result = [];
+		$result['data'][] = ['name' => 'Администратор', 'y' => (integer)Roles::find()->where(['item_name' => 'admin'])->count()];
+		$result['data'][] = ['name' => 'Менеджер', 'y' => (integer)Roles::find()->where(['item_name' => 'manager'])->count()];
+		$result['data'][] = ['name' => 'Пользователь', 'y' => (integer)Roles::find()->where(['item_name' => 'user'])->count()];
+
+		$result['all'] = (integer)Roles::find()->count();
+
+		return $result;
+	}
 }

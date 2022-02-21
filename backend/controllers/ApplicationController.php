@@ -111,6 +111,13 @@ class ApplicationController extends Controller
 		]);
 	}
 
+
+	/**
+	 * Смена статуса заявки
+	 * @param $id
+	 * @return array|false
+	 * @throws NotFoundHttpException
+	 */
 	public function actionSetState($id)
 	{
 		$model = $this->findModel($id);
@@ -203,6 +210,7 @@ class ApplicationController extends Controller
 	}
 
 	/**
+	 * Получение массива с организациями
 	 * @return array|string[]
 	 */
 	public function actionGetOrg()
@@ -258,6 +266,7 @@ class ApplicationController extends Controller
 	/**
 	 * Создание нового сообщения аявксом
 	 * @return string
+	 * @throws NotFoundHttpException
 	 */
 	public function actionMessageUpdate()
 	{

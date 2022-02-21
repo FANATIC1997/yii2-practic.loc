@@ -17,7 +17,7 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
 		'https://use.fontawesome.com/releases/v5.3.1/js/all.js',
-		'js/script.js',
+		'js/js.js',
     ];
 
 	public $depends = [

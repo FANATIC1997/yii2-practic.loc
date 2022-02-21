@@ -53,7 +53,7 @@ class m130524_201442_init extends Migration
 
 	    $this->insert('{{%user}}', [
 		    'id' => 3,
-		    'username' => 'Manager',
+		    'username' => 'Lilop',
 		    'phone' => '9881059955',
 		    'password_hash' => '$2y$13$w0bY7cyoAwJXi7zrMqYPGu4dVejXRxQy7Glhd3.v7wVR0dlUYSkjm',
 		    'email' => 'shram-mamb20161@mail.ru',

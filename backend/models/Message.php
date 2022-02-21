@@ -6,6 +6,7 @@ namespace backend\models;
 use DateTime;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
@@ -67,26 +68,43 @@ class Message extends ActiveRecord
 		];
 	}
 
+	/**
+	 * @return ActiveQuery
+	 */
 	public function getApplication()
 	{
 		return $this->hasOne(Application::className(), ['id' => 'application_id']);
 	}
 
+	/**
+	 * @return ActiveQuery
+	 */
 	public function getStatus()
 	{
 		return $this->hasOne(Status::className(), ['id' => 'status_id']);
 	}
 
+	/**
+	 * @return ActiveQuery
+	 */
 	public function getUser()
 	{
 		return $this->hasOne(User::className(), ['id' => 'user_id']);
 	}
 
+	/**
+	 * @param $id
+	 * @return array|ActiveRecord[]
+	 */
 	public function getMessage($id)
 	{
 		return self::find()->where(['application_id' => $id])->orderBy('create_time')->all();
 	}
 
+	/**
+	 * Новое сообщение
+	 * @return array|string[]
+	 */
 	public function newMessage()
 	{
 		$application = Application::findOne($this->application_id);
@@ -107,6 +125,10 @@ class Message extends ActiveRecord
 		return ['success' => 'false'];
 	}
 
+	/**
+	 * Изменение сообщения
+	 * @return array|string[]
+	 */
 	public function updateMessage()
 	{
 		$application = Application::findOne($this->application_id);
@@ -118,6 +140,13 @@ class Message extends ActiveRecord
 		return ['success' => 'false'];
 	}
 
+	/**
+	 * Высчет времени на возможность изменения
+	 * сообщения
+	 * @param $time
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function isEditMessage($time)
 	{
 		$nowTime = new DateTime();
