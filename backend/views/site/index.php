@@ -19,8 +19,8 @@ $role = new Roles();
 $access = $role->getRole();
 ?>
 <div class="site-index">
-    <div class="container overflow-hidden">
-        <h2 style="margin-bottom: 2%;">Прикрепленных к вам организаций: <strong><?= $countOrgs ?></strong></h2>
+    <div class="container overflow-hidden mt-5">
+        <h2 style="margin-bottom: 1%; margin-top: 2%;">Прикрепленных к вам организаций: <strong><?= $countOrgs ?></strong></h2>
 
         <div class="row">
 			<?php if ($access['item_name'] == User::ADMIN): ?>
@@ -58,19 +58,27 @@ $access = $role->getRole();
 
         <div class="row">
             <div class="col">
-                <div class="card" style="width: 20rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Статистика заявок</h5>
-                        <p class="card-text">
-                            Общее количество заявок <strong><?= $application['allapplications'] ?></strong>
-                        </p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-						<?= Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">Новых: <span class="badge badge-primary badge-pill">' . $application['applicationsNew'] . '</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'Новая']]) ?>
-						<?= Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">В работе:  <span class="badge badge-primary badge-pill">' . $application['applicationsWork'] . '</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'В работе']]) ?>
-						<?= Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">Готовых:  <span class="badge badge-primary badge-pill">' . $application['applicationsComplete'] . '</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'Готово']]) ?>
-						<?= Html::a('<li class="list-group-item d-flex justify-content-between align-items-center">Решенных:  <span class="badge badge-primary badge-pill">' . $application['applicationsClosed'] . '</span></li>', ['application/index', 'ApplicationSearch' => ['status' => 'Закрыто']]) ?>
-                    </ul>
+                <div class="box">
+					<?= Html::img('@web/image/new.svg', ['class' => 'box-image']) ?>
+					<?= Html::a('Новых <span class="badge badge-primary badge-pill">' . $application['applicationsNew'] . '</span>', ['application/index', 'ApplicationSearch' => ['status' => 'Новая']], ['class' => 'ml-2']) ?>
+                </div>
+            </div>
+            <div class="col">
+                <div class="box">
+					<?= Html::img('@web/image/work.svg', ['class' => 'box-image']) ?>
+					<?= Html::a('В работе  <span class="badge badge-primary badge-pill">' . $application['applicationsWork'] . '</span>', ['application/index', 'ApplicationSearch' => ['status' => 'В работе']], ['class' => 'ml-2']) ?>
+                </div>
+            </div>
+            <div class="col">
+                <div class="box">
+					<?= Html::img('@web/image/complete.svg', ['class' => 'box-image']) ?>
+					<?= Html::a('Готовых  <span class="badge badge-primary badge-pill">' . $application['applicationsComplete'] . '</span>', ['application/index', 'ApplicationSearch' => ['status' => 'Готово']], ['class' => 'ml-2']) ?>
+                </div>
+            </div>
+            <div class="col">
+                <div class="box">
+					<?= Html::img('@web/image/close.svg', ['class' => 'box-image']) ?>
+					<?= Html::a('Решенных  <span class="badge badge-primary badge-pill">' . $application['applicationsClosed'] . '</span>', ['application/index', 'ApplicationSearch' => ['status' => 'Закрыто']], ['class' => 'ml-1']) ?>
                 </div>
             </div>
         </div>

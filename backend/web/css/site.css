@@ -289,6 +289,11 @@ h6 {
 }
 
 .site-index .row, .site-index .row .col {
-    margin-top: 1em;
-    margin-bottom: 1em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.box .box-image{
+    width: 60px;
+    height: 60px;
 }
