@@ -135,9 +135,55 @@ $(document).on('submit', 'body #modal-w1', function () {
         })
     return false;
 });
+
+$(document).on('submit', 'body #modal-review', function () {
+    let yiiform = $('body #modal-review');
+    // отправляем данные на сервер
+    $.ajax({
+            type: yiiform.attr('method'),
+            url: yiiform.attr('action'),
+            data: yiiform.serializeArray()
+        }
+    )
+        .done(function (data) {
+
+            $('#modalReview').modal('hide');
+        })
+        .fail(function () {
+            // не удалось выполнить запрос к серверу
+        })
+    return false;
+});
+
+$(document).on('click', 'body #modal-review #next', function () {
+    $('body #modal-review #back').attr('name', '');
+});
+
+$(document).on('click', 'body #modal-review #back', function () {
+    $('body #modal-review #next').attr('name', '');
+});
+
+$(document).on('change', 'input[name=rating]', function () {
+    if ($(this).val() === '1') {
+        $('body #modal-review #back').css('display', 'inline-block');
+    } else {
+        $('body #modal-review #back').css('display', 'none');
+    }
+});
+
+if (window.location.pathname === '/application/view') {
+    let status = parseInt($('#status').attr('data-id'));
+    if (status >= 3 && status !== 5) {
+        try {
+            $('#modalReview').modal('show');
+        } catch (e) {
+
+        }
+    }
+}
 if (window.location.pathname === '/' || window.location.pathname === '/site/index') {
     let path = '';
-    if(window.location.pathname === '/') path = '/site/';
+    if (window.location.pathname === '/') path = '/site/';
     $.ajax({
         type: 'GET',
         url: path + 'get-stat-users',
@@ -193,7 +239,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/site/inde
 
     $.ajax({
         type: 'GET',
-        url: path +'get-analysis-application',
+        url: path + 'get-analysis-application',
     }).done(function (data) {
         Highcharts.chart('chart-application', {
             chart: {
@@ -207,7 +253,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/site/inde
             },
             subtitle: {
                 text: 'Нажмите на название категории для перехода к ней. <br/>' +
-                    '<strong>Общее количество заявок '+data.all+'</strong>'
+                    '<strong>Общее количество заявок ' + data.all + '</strong>'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.count}</b>'
@@ -240,7 +286,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/site/inde
 
     $.ajax({
         type: 'GET',
-        url: path +'get-max',
+        url: path + 'get-max',
     }).done(function (data) {
         Highcharts.chart('chart-max-work', {
             chart: {

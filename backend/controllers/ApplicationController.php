@@ -48,6 +48,7 @@ class ApplicationController extends Controller
 								'message-create',
 								'message-update',
 								'set-state',
+								'new-review'
 							],
 							'allow' => true,
 							'roles' => ['manager', 'user', 'admin']
@@ -282,6 +283,19 @@ class ApplicationController extends Controller
 			}
 		}
 		return false;
+	}
+
+	public function actionNewReview($id)
+	{
+		Yii::$app->response->format = Response::FORMAT_JSON;
+		if ($this->request->isPost) {
+			$application = $this->findModel($id);
+			if($this->request->validateCsrfToken()) {
+				return $application->setReview($this->request->post());
+			} else {
+				return ['action' => 'error', 'data' => 'Не верный токен'];
+			}
+		}
 	}
 
 	/**

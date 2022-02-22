@@ -4,6 +4,7 @@ use backend\models\Application;
 use backend\models\Roles;
 use backend\models\User;
 use yii\bootstrap4\ActiveForm;
+use yii\bootstrap4\Modal;
 use yii\grid\GridView;
 use yii\bootstrap4\Html;
 use yii\web\YiiAsset;
@@ -58,6 +59,15 @@ $access = $role->getRole();
 											<?php endif; ?>
 										<?php endif; ?>
                                     </div>
+									<?php if($model->rating): ?>
+                                        <div class="rating-result">
+                                            <span <?= ($model->rating >= 1) ? 'class="active"' : '' ?>></span>
+                                            <span <?= ($model->rating >= 2) ? 'class="active"' : '' ?>></span>
+                                            <span <?= ($model->rating >= 3) ? 'class="active"' : '' ?>></span>
+                                            <span <?= ($model->rating >= 4) ? 'class="active"' : '' ?>></span>
+                                            <span <?= ($model->rating >= 5) ? 'class="active"' : '' ?>></span>
+                                        </div>
+									<?php endif; ?>
                                 </h6>
                                 <div class="row w-100">
                                     <div class="col-sm-6">
@@ -82,7 +92,8 @@ $access = $role->getRole();
                                     </div>
                                     <div class="col-sm-6">
                                         <p class="m-b-10 f-w-600" style="font-size: 1.4em">Статус</p>
-                                        <h6 class="text-muted f-w-400"><?= $model->getColor($model) ?></h6>
+                                        <h6 class="text-muted f-w-400" data-id="<?= $model->status_id ?>"
+                                            id="status"><?= $model->getColor($model) ?></h6>
                                     </div>
                                     <div class="col-sm-12">
                                         <p class="m-b-10 f-w-600" style="font-size: 1.4em">Описание</p>
@@ -100,25 +111,25 @@ $access = $role->getRole();
 					<?php foreach ($logsUser as $item): ?>
                         <div class="col-12 mt-4">
 							<?php if (!is_null($item->oldUser)): ?>
-                            <div class="item">
-                                <div class="item-text">
-                                    Был изменен пользователь на <?= $item->oldUser->username ?>
+                                <div class="item">
+                                    <div class="item-text">
+                                        Был изменен пользователь на <?= $item->oldUser->username ?>
+                                    </div>
+                                    <div class="item-time">
+										<?= date_format(date_create($item->create_time), 'd.m.Y H:i:s') ?>
+                                    </div>
                                 </div>
-                                <div class="item-time">
-									<?=date_format(date_create($item->create_time), 'd.m.Y H:i:s')?>
-                                </div>
-                            </div>
 							<?php endif; ?>
 
 							<?php if (!is_null($item->oldManager)): ?>
-                            <div class="item">
-                                <div class="item-text">
-                                    Был изменен менеджер на <?= $item->oldManager->username ?>
+                                <div class="item">
+                                    <div class="item-text">
+                                        Был изменен менеджер на <?= $item->oldManager->username ?>
+                                    </div>
+                                    <div class="item-time">
+										<?= date_format(date_create($item->create_time), 'd.m.Y H:i:s') ?>
+                                    </div>
                                 </div>
-                                <div class="item-time">
-                                    <?=date_format(date_create($item->create_time), 'd.m.Y H:i:s')?>
-                                </div>
-                            </div>
 							<?php endif; ?>
                         </div>
 					<?php endforeach; ?>
@@ -182,7 +193,7 @@ $access = $role->getRole();
 						],
 					]); ?>
 
-					<?php if ($model->status_id < 4): ?>
+					<?php if ($model->status_id < 4 or $model->status_id == 5): ?>
 						<?php $form = ActiveForm::begin(); ?>
 
 						<?php if ($access['item_name'] == User::MANAGER or $access['item_name'] == User::ADMIN): ?>
@@ -193,17 +204,17 @@ $access = $role->getRole();
                                 </div>
 
                                 <div class="form-group">
-									<?= Html::submitButton('В работу', ['class' => 'btn btn-success']) ?>
+									<?= Html::submitButton('В работу', ['class' => 'btn btn-success', 'name' => 'next']) ?>
                                 </div>
 
-							<?php elseif ($model->status_id == 2): ?>
+							<?php elseif ($model->status_id == 2 or $model->status_id == 5): ?>
 
                                 <div class="form-group">
 									<?= $form->field($log, 'comment')->textInput(['maxlength' => true]) ?>
                                 </div>
 
                                 <div class="form-group">
-									<?= Html::submitButton('Завершить', ['class' => 'btn btn-success']) ?>
+									<?= Html::submitButton('Завершить', ['class' => 'btn btn-success', 'name' => 'next']) ?>
                                 </div>
 
 							<?php elseif ($model->status_id == 3 and $access['user_id'] == $model->user_id): ?>
@@ -251,4 +262,43 @@ $access = $role->getRole();
             </div>
         </div>
     </div>
+	<?php if (!$model->rating and !$model->review): ?>
+		<?php if ($model->status_id >= 3 and $model->user_id == $access['user_id']): ?>
+			<?php Modal::begin(['title' => 'Оценка заявки', 'id' => 'modalReview']) ?>
+			<?php $form = ActiveForm::begin(['action' => 'new-review?id=' . $model->id, 'method' => 'POST', 'id' => 'modal-review']); ?>
+            <div class="form-group">
+                <label>Ваша оценка</label>
+                <div class="rating">
+
+                    <input type="radio" id="star-5" name="rating" value="5">
+                    <label for="star-5" title="Все отлично"></label>
+
+                    <input type="radio" id="star-4" name="rating" value="4">
+                    <label for="star-4" title="Сделано с ошибками"></label>
+
+                    <input type="radio" id="star-3" name="rating" value="3">
+                    <label for="star-3" title="Сделано но плохо"></label>
+
+                    <input type="radio" id="star-2" name="rating" value="2">
+                    <label for="star-2" title="Что-то сделано но очень плохо"></label>
+
+                    <input type="radio" id="star-1" name="rating" value="1">
+                    <label for="star-1" title="Ужасно, не чего не сделано"></label>
+
+                </div>
+            </div>
+            <div class="review-area">
+                <div class="form-group">
+                    <label for="review-area">Ваш комментарий</label>
+                    <textarea class="form-control" id="review-area" name="review" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+				<?= Html::submitButton('Закрыть', ['class' => 'btn btn-success', 'name' => 'next', 'id' => 'next']) ?>
+				<?= Html::submitButton('Вернуть в работу', ['class' => 'btn btn-primary', 'name' => 'back', 'id' => 'back', 'style' => 'display: none;']) ?>
+            </div>
+			<?php ActiveForm::end(); ?>
+			<?php Modal::end() ?>
+		<?php endif; ?>
+	<?php endif; ?>
 </div>

@@ -19,6 +19,7 @@ $role = new Roles();
 $access = $role->getRole();
 ?>
 <div class="site-index">
+
     <div class="container overflow-hidden mt-5">
         <h2 style="margin-bottom: 1%; margin-top: 2%;">Прикрепленных к вам организаций: <strong><?= $countOrgs ?></strong></h2>
 
@@ -26,12 +27,6 @@ $access = $role->getRole();
 			<?php if ($access['item_name'] == User::ADMIN): ?>
                 <div class="col">
                     <div class="box">
-                        <div id="chart-user-info" style="display: none;">
-                            <span id="all"><?= $users['allusers'] ?></span>
-                            <span id="admin"><?= $users['admins'] ?></span>
-                            <span id="manager"><?= $users['managers'] ?></span>
-                            <span id="user"><?= $users['users'] ?></span>
-                        </div>
                         <div id="chart-user"></div>
                     </div>
                 </div>

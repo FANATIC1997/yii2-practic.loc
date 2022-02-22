@@ -297,3 +297,76 @@ h6 {
     width: 60px;
     height: 60px;
 }
+
+.rating {
+    width: 200px;
+    height: 40px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.rating:not(:checked)>input {
+    display: none;
+}
+
+.rating:not(:checked)>label {
+    width: 40px;
+    cursor: pointer;
+    font-size: 40px;
+    color: lightgrey;
+    text-align: center;
+    line-height: 1;
+}
+
+.rating:not(:checked)>label:before {
+    content: '★';
+}
+
+.rating>input:checked~label {
+    color: gold;
+}
+
+.rating:not(:checked)>label:hover,
+.rating:not(:checked)>label:hover~label {
+    color: gold;
+}
+
+.rating>input:checked+label:hover,
+.rating>input:checked+label:hover~label,
+.rating>input:checked~label:hover,
+.rating>input:checked~label:hover~label,
+.rating>label:hover~input:checked~label {
+    color: gold;
+}
+
+.rating-result {
+    width: 265px;
+    position: absolute;
+    top: 20px;
+    right: 80px;
+}
+
+@media(max-width:415px) {
+    .rating-result {
+        top: 60px;
+        right: -50px;
+    }
+}
+
+.rating-result span {
+    padding: 0;
+    font-size: 32px;
+    margin: 0 3px;
+    line-height: 1;
+    color: lightgrey;
+    text-shadow: 1px 1px #bbb;
+}
+.rating-result > span:before {
+    content: '★';
+}
+.rating-result > span.active {
+    color: gold;
+    text-shadow: 1px 1px #c60;
+}

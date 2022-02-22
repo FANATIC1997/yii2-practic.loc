@@ -32,6 +32,8 @@ class Log extends ActiveRecord
 	const HOUR_SEC = 3600;
 	const MINUTE_SEC = 60;
 
+	public $action;
+
 	public function behaviors()
 	{
 		return [
@@ -168,6 +170,10 @@ class Log extends ActiveRecord
 				$this->old_manager_id = $model->getOldAttribute('manager_id');
 			}
 		}
+		if($this->action == 'review'){
+			$comment = 'Оценка работы с комментарием: ' . $this->comment;
+			$this->comment = $comment;
+		}
 		if ($model->status_id != $model->getOldAttribute('status_id')) {
 			if(!empty($this->comment) and $this->comment != 'Создание заявки')
 			{
@@ -228,11 +234,18 @@ class Log extends ActiveRecord
 	public function getBackStatus($data)
 	{
 		if ($data->status_id != 1) {
-			$log = static::find()->where(['application_id' => $data->application_id])
-				->andWhere(['status_id' => $data->status_id - 1])->one();
+			$log = static::find()->where(['application_id' => $data->application_id])->asArray()->all();
+			$create_time = null;
+			foreach ($log as $key => $item) {
+				if($item['id'] == $data->id){
+					if($item['status_id'] != 1) {
+						$create_time = $log[$key - 1]['create_time'];
+					}
+				}
+			}
 
 			$startDate = new DateTime($data->create_time);
-			$endDate = new DateTime($log->create_time);
+			$endDate = new DateTime($create_time);
 
 			return self::getStrTime($startDate, $endDate);
 		}
@@ -255,7 +268,7 @@ class Log extends ActiveRecord
 	}
 
 	/**
-	 * Листинг лога по юзеру
+	 * Листинг лога по заявке
 	 * @param $id
 	 * @return array|ActiveRecord[]
 	 */

@@ -21,6 +21,7 @@ class m220125_102755_create_status_table extends Migration
 		$this->insert('{{%status}}', ['name' => 'В работе']);
 		$this->insert('{{%status}}', ['name' => 'Готово']);
 		$this->insert('{{%status}}', ['name' => 'Закрыто']);
+		$this->insert('{{%status}}', ['name' => 'Доработка']);
     }
 
     /**
